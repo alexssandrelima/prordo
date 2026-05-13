@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0F3D2A" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Procer Ponto" />
+  <title>Procer · Controle de Ponto</title>
+
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230F3D2A'/%3E%3Ccircle cx='28' cy='50' r='6' fill='%23D4A82C'/%3E%3Ccircle cx='50' cy='50' r='8' fill='%23E8C354'/%3E%3Ccircle cx='75' cy='50' r='6' fill='%23D4A82C'/%3E%3C/svg%3E" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            procer: {
+              50:  "#F0F8F3",
+              100: "#DCEFE3",
+              200: "#B6DCC4",
+              300: "#7CC093",
+              400: "#4DA371",
+              500: "#2D8A5E",
+              600: "#1F6E48",
+              700: "#155739",
+              800: "#0F3D2A",
+              900: "#0A2A1C",
+            },
+            wheat: {
+              50:  "#FBF7E8",
+              100: "#FBF1D3",
+              300: "#EFD27A",
+              400: "#E0B137",
+              500: "#D4A82C",
+              600: "#A88420",
+            },
+            cream: "#FAF6EC",
+            ink:   "#0B1B14",
+          },
+          fontFamily: {
+            sans: ['Manrope', 'system-ui', '-apple-system', 'sans-serif'],
+          },
+          boxShadow: {
+            'card': '0 1px 2px rgba(15,61,42,0.06), 0 4px 16px rgba(15,61,42,0.04)',
+            'cta':  '0 8px 24px -8px rgba(15,61,42,0.45)',
+          },
+        }
+      }
+    }
+  </script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    html, body, #root { height: 100%; }
+    body {
+      margin: 0;
+      font-family: 'Manrope', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-font-smoothing: antialiased;
+      overscroll-behavior-y: contain;
+      background: #FAF6EC;
+    }
+    .safe-bottom { padding-bottom: max(0.75rem, env(safe-area-inset-bottom)); }
+    .safe-top { padding-top: max(0.5rem, env(safe-area-inset-top)); }
+    .no-bounce { overscroll-behavior: none; }
+    button:disabled { cursor: not-allowed; }
+
+    /* Plano de fundo de "constelação" sutil no login — referência ao CERES Orion */
+    .bg-constellation {
+      background-color: #0F3D2A;
+      background-image:
+        radial-gradient(circle at 18% 22%, rgba(255,255,255,0.08) 0 1.5px, transparent 2px),
+        radial-gradient(circle at 78% 14%, rgba(255,255,255,0.10) 0 1px, transparent 2px),
+        radial-gradient(circle at 42% 38%, rgba(255,255,255,0.06) 0 1px, transparent 2px),
+        radial-gradient(circle at 88% 52%, rgba(255,255,255,0.08) 0 1.5px, transparent 2px),
+        radial-gradient(circle at 28% 72%, rgba(255,255,255,0.05) 0 1px, transparent 2px),
+        radial-gradient(circle at 62% 84%, rgba(255,255,255,0.10) 0 1px, transparent 2px),
+        radial-gradient(circle at 8% 90%, rgba(255,255,255,0.06) 0 1px, transparent 2px);
+    }
+
+    /* Marca d'água da Procer no canto */
+    .procer-mark {
+      letter-spacing: 0.25em;
+    }
+  </style>
+</head>
+<body class="bg-cream no-bounce">
+  <div id="root"></div>
+
+  <script type="text/babel" data-presets="react">
+    const { useCallback, useEffect, useMemo, useState } = React;
+
+    // -------------------------------------------------------------------
+    // Constantes
+    // -------------------------------------------------------------------
+    const APP_NAME = "Procer Ponto";
+    const APP_TAGLINE = "Agrointeligência de pós-colheita";
+    const APP_VERSION = "1.0.0";
+    const STORAGE_KEY = "procer_ponto_v3";
+
+    const ROLE = { ADMIN: "admin", COLABORADOR: "colaborador" };
+
+    const PUNCH_TYPE = { ENTRADA: "Entrada", SAIDA: "Saída" };
+    const STATUS = { ONLINE: "Online", OFFLINE: "Offline" };
+    const TAB = { PONTO: "ponto", EQUIPE: "equipe", RESUMO: "resumo" };
+    const TOAST = { INFO: "info", SUCCESS: "success", ERROR: "error" };
+    const TOAST_TTL_MS = 3500;
+
+    // Base unificada de usuários: credenciais + dados de exibição.
+    // Senhas em SHA-256. Em produção: backend com bcrypt/argon2 + HTTPS.
+    const INITIAL_USERS = [
+      {
+        id: "u-alexssandre",
+        username: "alexssandre.lima",
+        // senha: Procer@2026
+        passwordHash: "923d7731fff83f68a974435c94eeb99c14c55786bd7f90c093d5e96030d83267",
+        role: ROLE.ADMIN,
+        displayName: "Alexssandre Lima",
+        title: "Coord. de Implantações",
+        status: STATUS.ONLINE,
+        lastPunch: "08:02",
+      },
+      {
+        id: "u-fernanda",
+        username: "fernanda.souza",
+        // senha: procer123
+        passwordHash: "68c26e0c92c9890a87a2a32f2e193ecdfee6b468aa4a841b90ee3ac17d5837c4",
+        role: ROLE.COLABORADOR,
+        displayName: "Fernanda Souza",
+        title: "Supervisora Técnica",
+        status: STATUS.ONLINE,
+        lastPunch: "08:31",
+      },
+      {
+        id: "u-bruno",
+        username: "bruno.costa",
+        // senha: procer123
+        passwordHash: "68c26e0c92c9890a87a2a32f2e193ecdfee6b468aa4a841b90ee3ac17d5837c4",
+        role: ROLE.COLABORADOR,
+        displayName: "Bruno Costa",
+        title: "Téc. de Termometria",
+        status: STATUS.OFFLINE,
+        lastPunch: "17:04",
+      },
+      {
+        id: "u-mariana",
+        username: "mariana.alves",
+        // senha: procer123
+        passwordHash: "68c26e0c92c9890a87a2a32f2e193ecdfee6b468aa4a841b90ee3ac17d5837c4",
+        role: ROLE.COLABORADOR,
+        displayName: "Mariana Alves",
+        title: "Eng. de Automação",
+        status: STATUS.ONLINE,
+        lastPunch: "13:01",
+      },
+    ];
+
+    // -------------------------------------------------------------------
+    // Utilitários
+    // -------------------------------------------------------------------
+    const newId = () =>
+      typeof crypto !== "undefined" && crypto.randomUUID
+        ? crypto.randomUUID()
+        : `id-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+
+    const formatClock = () => {
+      const d = new Date();
+      return {
+        date: d.toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "short" }),
+        time: d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" }),
+      };
+    };
+
+    const formatHHMM = (d = new Date()) =>
+      d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+
+    async function sha256(text) {
+      const buf = new TextEncoder().encode(text);
+      const hash = await crypto.subtle.digest("SHA-256", buf);
+      return Array.from(new Uint8Array(hash))
+        .map((b) => b.toString(16).padStart(2, "0"))
+        .join("");
+    }
+
+    // -------------------------------------------------------------------
+    // Ícones SVG
+    // -------------------------------------------------------------------
+    const ICONS = {
+      clock3: (<><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16.5 12" /></>),
+      logIn: (<><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" /><polyline points="10 17 15 12 10 7" /><line x1="15" y1="12" x2="3" y2="12" /></>),
+      logOut: (<><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></>),
+      plus: (<><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></>),
+      search: (<><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></>),
+      shield: <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />,
+      user: (<><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></>),
+      users: (<><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></>),
+      calendarClock: (<><path d="M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5" /><path d="M16 2v4" /><path d="M8 2v4" /><path d="M3 10h5" /><path d="M17.5 17.5 16 16.25V14" /><path d="M22 16a6 6 0 1 1-12 0 6 6 0 0 1 12 0Z" /></>),
+      mapPin: (<><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></>),
+      refreshCw: (<><polyline points="23 4 23 10 17 10" /><polyline points="1 20 1 14 7 14" /><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" /></>),
+      // Símbolo de grão/trigo — agribusiness
+      wheat: (<><path d="M2 22 16 8" /><path d="M3.47 12.53 5 11l1.53 1.53a3.5 3.5 0 0 1 0 4.94L5 19l-1.53-1.53a3.5 3.5 0 0 1 0-4.94Z" /><path d="M7.47 8.53 9 7l1.53 1.53a3.5 3.5 0 0 1 0 4.94L9 15l-1.53-1.53a3.5 3.5 0 0 1 0-4.94Z" /><path d="M11.47 4.53 13 3l1.53 1.53a3.5 3.5 0 0 1 0 4.94L13 11l-1.53-1.53a3.5 3.5 0 0 1 0-4.94Z" /><path d="M20 2 22 4" /><path d="M22 8l-3-3" /></>),
+      trash: (<><polyline points="3 6 5 6 21 6" /><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6" /><line x1="10" y1="11" x2="10" y2="17" /><line x1="14" y1="11" x2="14" y2="17" /><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></>),
+      keyRound: (<><circle cx="7.5" cy="15.5" r="5.5" /><path d="m21 2-9.6 9.6" /><path d="m15.5 7.5 3 3L22 7l-3-3" /></>),
+      shieldCheck: (<><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" /><path d="m9 12 2 2 4-4" /></>),
+      chevronDown: <polyline points="6 9 12 15 18 9" />,
+    };
+
+    const Icon = ({ name, className = "h-4 w-4", strokeWidth = 2, ...rest }) => (
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true" {...rest}>
+        {ICONS[name]}
+      </svg>
+    );
+
+    // Logo Procer — wordmark + 3 pontos referência à constelação de Orion
+    function ProcerLogo({ variant = "dark", size = "md" }) {
+      const isLight = variant === "light";
+      const text = isLight ? "text-white" : "text-procer-800";
+      const accent = isLight ? "text-wheat-400" : "text-wheat-500";
+      const dim = size === "sm" ? "h-6" : size === "lg" ? "h-10" : "h-8";
+      return (
+        <div className={`flex items-center gap-2 ${dim}`} aria-label="Procer">
+          <div className="flex items-center gap-1">
+            <span className={`h-1.5 w-1.5 rounded-full ${accent.replace('text-','bg-')}`}></span>
+            <span className={`h-2.5 w-2.5 rounded-full ${accent.replace('text-','bg-')}`}></span>
+            <span className={`h-1.5 w-1.5 rounded-full ${accent.replace('text-','bg-')}`}></span>
+          </div>
+          <span className={`procer-mark font-extrabold text-sm ${text}`}>PROCER</span>
+        </div>
+      );
+    }
+
+    // -------------------------------------------------------------------
+    // Hooks (idênticos à versão anterior)
+    // -------------------------------------------------------------------
+    function usePersistedState(key, initialValue) {
+      const [state, setState] = useState(() => {
+        try {
+          const raw = window.localStorage.getItem(key);
+          return raw ? JSON.parse(raw) : initialValue;
+        } catch { return initialValue; }
+      });
+      useEffect(() => {
+        try { window.localStorage.setItem(key, JSON.stringify(state)); } catch {}
+      }, [key, state]);
+      return [state, setState];
+    }
+
+    function useClock() {
+      const [clock, setClock] = useState(formatClock);
+      useEffect(() => {
+        const id = setInterval(() => setClock(formatClock()), 1000);
+        return () => clearInterval(id);
+      }, []);
+      return clock;
+    }
+
+    function useGeolocation() {
+      const [geo, setGeo] = useState({ enabled: false, loading: false, coords: null, error: null });
+      const request = useCallback(() => {
+        if (!navigator.geolocation) {
+          setGeo({ enabled: false, loading: false, coords: null, error: "Geolocalização indisponível" });
+          return;
+        }
+        setGeo((prev) => ({ ...prev, loading: true, error: null }));
+        navigator.geolocation.getCurrentPosition(
+          ({ coords }) => setGeo({ enabled: true, loading: false, coords: { lat: coords.latitude, lng: coords.longitude }, error: null }),
+          (err) => setGeo({ enabled: false, loading: false, coords: null, error: err.message || "Falha ao obter localização" }),
+          { enableHighAccuracy: true, timeout: 10000 }
+        );
+      }, []);
+      const label = useMemo(() => {
+        if (geo.loading) return "Obtendo localização...";
+        if (geo.error) return geo.error;
+        if (geo.enabled && geo.coords) return `Local validado: ${geo.coords.lat.toFixed(4)}, ${geo.coords.lng.toFixed(4)}`;
+        return "Localização desativada";
+      }, [geo]);
+      return { ...geo, label, request };
+    }
+
+    function useToast() {
+      const [toast, setToast] = useState(null);
+      useEffect(() => {
+        if (!toast) return;
+        const id = setTimeout(() => setToast(null), TOAST_TTL_MS);
+        return () => clearTimeout(id);
+      }, [toast]);
+      const show = useCallback((text, type = TOAST.INFO) => setToast({ text, type, id: newId() }), []);
+      return { toast, show };
+    }
+
+    // -------------------------------------------------------------------
+    // Componentes utilitários
+    // -------------------------------------------------------------------
+    function Toast({ toast }) {
+      if (!toast) return null;
+      const tone = {
+        [TOAST.SUCCESS]: "bg-procer-100 text-procer-800 border border-procer-200",
+        [TOAST.ERROR]: "bg-wheat-100 text-wheat-600 border border-wheat-300",
+        [TOAST.INFO]: "bg-procer-50 text-procer-700 border border-procer-100",
+      }[toast.type];
+      return (
+        <div role="status" aria-live="polite" className={`mb-4 rounded-2xl px-4 py-3 text-sm font-medium ${tone}`}>
+          {toast.text}
+        </div>
+      );
+    }
+
+    function TabButton({ active, iconName, label, onClick }) {
+      return (
+        <button
+          type="button"
+          onClick={onClick}
+          aria-pressed={active}
+          className={`flex flex-1 flex-col items-center justify-center gap-1 rounded-2xl px-3 py-2 text-xs font-semibold transition ${
+            active ? "bg-procer-800 text-white" : "bg-procer-50 text-procer-700"
+          }`}
+        >
+          <Icon name={iconName} />
+          {label}
+        </button>
+      );
+    }
+
+    function Field({ id, label, ...inputProps }) {
+      return (
+        <div>
+          <label htmlFor={id} className="mb-1 block text-sm font-semibold text-procer-800">{label}</label>
+          <input
+            id={id}
+            {...inputProps}
+            className="h-12 w-full rounded-2xl border border-procer-200 bg-white px-4 text-ink outline-none transition focus:border-procer-600 focus:ring-2 focus:ring-procer-100"
+          />
+        </div>
+      );
+    }
+
+    // -------------------------------------------------------------------
+    // Login
+    // -------------------------------------------------------------------
+    function LoginScreen({ users, onLogin, toast }) {
+      const [username, setUsername] = useState("");
+      const [password, setPassword] = useState("");
+      const [submitting, setSubmitting] = useState(false);
+      const clock = useClock();
+
+      const submit = async (e) => {
+        e.preventDefault();
+        if (submitting) return;
+        const u = username.trim().toLowerCase();
+        const p = password;
+        if (!u || !p) {
+          onLogin.error("Informe usuário e senha.");
+          return;
+        }
+        setSubmitting(true);
+        try {
+          const user = users.find((x) => x.username === u);
+          const inputHash = await sha256(p);
+          // Sempre faz o hash, mesmo se o usuário não existir, para evitar
+          // vazamento de existência via timing attack.
+          if (!user || inputHash !== user.passwordHash) {
+            onLogin.error("Usuário ou senha inválidos.");
+            return;
+          }
+          onLogin.success({
+            id: user.id,
+            username: user.username,
+            role: user.role,
+            displayName: user.displayName,
+            title: user.title,
+          });
+        } catch (err) {
+          onLogin.error("Falha ao validar credenciais.");
+        } finally {
+          setSubmitting(false);
+        }
+      };
+
+      return (
+        <div className="min-h-screen bg-constellation px-4 py-6 text-white safe-top safe-bottom">
+          <div className="mx-auto flex min-h-[calc(100vh-3rem)] max-w-md flex-col">
+
+            {/* Topo: marca Procer */}
+            <div className="flex items-center justify-between px-2 py-2">
+              <ProcerLogo variant="light" size="md" />
+              <span className="rounded-full border border-white/20 px-3 py-1 text-[10px] font-semibold uppercase tracking-widest text-white/80">
+                Controle de Ponto
+              </span>
+            </div>
+
+            {/* Card principal */}
+            <div className="mt-6 flex-1 rounded-[2rem] bg-white text-ink shadow-card">
+              <div className="p-6">
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-procer-100 text-procer-700">
+                    <Icon name="wheat" className="h-5 w-5" />
+                  </span>
+                  <div>
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-procer-600">Procer</p>
+                    <p className="text-xs text-procer-700">{APP_TAGLINE}</p>
+                  </div>
+                </div>
+
+                <h1 className="mt-6 text-3xl font-extrabold tracking-tight text-procer-900">
+                  Controle de ponto<br />remoto
+                </h1>
+                <p className="mt-3 text-sm leading-6 text-ink/60">
+                  Registro de entradas e saídas para equipes de implantação e operação em campo.
+                </p>
+
+                <div className="mt-6 rounded-3xl bg-procer-50 p-4">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-procer-600">Data</p>
+                  <p className="mt-1 font-semibold capitalize text-procer-900">{clock.date}</p>
+                  <p className="mt-3 text-xs font-semibold uppercase tracking-wider text-procer-600">Hora atual</p>
+                  <p className="mt-1 text-3xl font-extrabold tracking-tight text-procer-900 tabular-nums">{clock.time}</p>
+                </div>
+
+                <form onSubmit={submit} className="mt-6 space-y-4">
+                  <Field id="username" label="Usuário" value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="ex.: alexssandre.lima" autoComplete="username" />
+                  <Field id="password" label="Senha" type="password" value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••" autoComplete="current-password" />
+
+                  <Toast toast={toast} />
+
+                  <button type="submit" disabled={submitting}
+                    className="flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-procer-800 font-semibold text-white shadow-cta transition hover:bg-procer-700 active:bg-procer-900 disabled:opacity-60">
+                    <Icon name="logIn" />
+                    {submitting ? "Validando..." : "Entrar"}
+                  </button>
+
+                  <p className="text-center text-xs text-ink/40">
+                    Acesso restrito a colaboradores Procer.
+                  </p>
+                </form>
+              </div>
+
+              <div className="border-t border-procer-100 bg-procer-50 px-5 py-4 text-center text-[11px] text-procer-700">
+                <span className="font-semibold">PROCER AUTOMAÇÃO S.A.</span> · Criciúma/SC · v{APP_VERSION}
+              </div>
+            </div>
+
+            {/* Rodapé com a constelação */}
+            <p className="mt-6 text-center text-[10px] font-semibold uppercase tracking-[0.3em] text-white/40">
+              Guardião do pós-colheita
+            </p>
+          </div>
+        </div>
+      );
+    }
+
+    // -------------------------------------------------------------------
+    // Aba Ponto
+    // -------------------------------------------------------------------
+    function PontoTab({ session, geo, punches, onPunch, onRefresh }) {
+      const lastType = punches[0]?.type;
+      const canEntrada = lastType !== PUNCH_TYPE.ENTRADA;
+      const canSaida = lastType === PUNCH_TYPE.ENTRADA;
+
+      return (
+        <div className="space-y-4">
+          {/* Card de identificação */}
+          <div className="overflow-hidden rounded-[1.75rem] bg-procer-800 p-5 text-white shadow-card relative">
+            <div className="absolute right-4 top-4 opacity-20">
+              <Icon name="wheat" className="h-16 w-16" />
+            </div>
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-wheat-300">Usuário logado</p>
+            <h2 className="mt-1 text-2xl font-extrabold">{session.displayName}</h2>
+            <p className="mt-1 text-sm text-white/70">{session.title}</p>
+            <p className="mt-3 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white/90 backdrop-blur-sm">
+              {session.role === ROLE.ADMIN ? "Administrador" : "Colaborador"}
+            </p>
+          </div>
+
+          {/* Botões de registro */}
+          <div className="grid grid-cols-2 gap-3">
+            <button type="button" onClick={() => onPunch(PUNCH_TYPE.ENTRADA)} disabled={!canEntrada}
+              className="rounded-[1.5rem] bg-procer-600 p-5 text-left text-white shadow-cta transition disabled:opacity-40 disabled:shadow-none">
+              <Icon name="clock3" className="h-5 w-5" />
+              <p className="mt-8 text-lg font-extrabold">Entrada</p>
+              <p className="text-sm text-procer-100">{canEntrada ? "Registrar agora" : "Aguardando saída"}</p>
+            </button>
+            <button type="button" onClick={() => onPunch(PUNCH_TYPE.SAIDA)} disabled={!canSaida}
+              className="rounded-[1.5rem] bg-wheat-500 p-5 text-left text-procer-900 shadow-cta transition disabled:opacity-40 disabled:shadow-none">
+              <Icon name="logOut" className="h-5 w-5" />
+              <p className="mt-8 text-lg font-extrabold">Saída</p>
+              <p className="text-sm text-procer-800/70">{canSaida ? "Finalizar jornada" : "Sem entrada aberta"}</p>
+            </button>
+          </div>
+
+          {/* Validação de registro */}
+          <div className="rounded-[1.75rem] bg-white p-5 shadow-card">
+            <div className="flex items-center justify-between">
+              <h3 className="font-bold text-procer-900">Validação de registro</h3>
+              <button type="button" onClick={geo.request}
+                className="rounded-2xl bg-procer-100 px-3 py-2 text-xs font-semibold text-procer-700 transition hover:bg-procer-200">
+                {geo.loading ? "Validando..." : "Ativar localização"}
+              </button>
+            </div>
+            <p className="mt-3 flex items-start gap-2 text-sm text-procer-700">
+              <Icon name="mapPin" className="mt-0.5 h-4 w-4 shrink-0 text-procer-500" />
+              {geo.label}
+            </p>
+          </div>
+
+          {/* Últimos registros */}
+          <div className="rounded-[1.75rem] bg-white p-5 shadow-card">
+            <div className="flex items-center justify-between">
+              <h3 className="font-bold text-procer-900">Últimos registros</h3>
+              <button type="button" onClick={onRefresh} aria-label="Atualizar registros"
+                className="rounded-2xl bg-procer-100 p-2 text-procer-700">
+                <Icon name="refreshCw" />
+              </button>
+            </div>
+            <div className="mt-4 space-y-3">
+              {punches.length === 0 && (
+                <p className="text-sm text-ink/50">Nenhum registro ainda.</p>
+              )}
+              {punches.map((item) => (
+                <div key={item.id} className="rounded-2xl border border-procer-100 bg-procer-50/40 px-4 py-3">
+                  <div className="flex items-center justify-between">
+                    <p className="font-semibold text-procer-900">
+                      <span className={`mr-2 inline-block h-2 w-2 rounded-full ${item.type === PUNCH_TYPE.ENTRADA ? 'bg-procer-600' : 'bg-wheat-500'}`}></span>
+                      {item.type}
+                    </p>
+                    <p className="font-extrabold text-procer-900 tabular-nums">{item.time}</p>
+                  </div>
+                  <p className="mt-1 text-xs text-ink/50">{item.location}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // -------------------------------------------------------------------
+    // Aba Equipe — Gestão de Usuários
+    // -------------------------------------------------------------------
+    function UserRow({ user, isSelf, expanded, onToggleExpand, onResetPassword, onToggleRole, onDelete }) {
+      const isAdmin = user.role === ROLE.ADMIN;
+      return (
+        <div className="rounded-2xl border border-procer-100 bg-white">
+          <button
+            type="button"
+            onClick={onToggleExpand}
+            aria-expanded={expanded}
+            className="flex w-full items-start justify-between gap-3 p-4 text-left"
+          >
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2">
+                <p className="truncate font-bold text-procer-900">{user.displayName}</p>
+                {isSelf && (
+                  <span className="rounded-full bg-procer-50 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-procer-600">
+                    Você
+                  </span>
+                )}
+              </div>
+              <p className="truncate text-sm text-ink/60">{user.title}</p>
+              <p className="mt-1 text-[11px] text-ink/40">@{user.username}</p>
+            </div>
+            <div className="flex flex-col items-end gap-1.5 shrink-0">
+              <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
+                isAdmin ? "bg-procer-800 text-wheat-300" : "bg-procer-100 text-procer-700"
+              }`}>
+                {isAdmin ? "Admin" : "Colab."}
+              </span>
+              <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
+                user.status === STATUS.ONLINE ? "bg-procer-50 text-procer-600" : "bg-ink/5 text-ink/40"
+              }`}>
+                {user.status}
+              </span>
+            </div>
+          </button>
+
+          {expanded && (
+            <div className="border-t border-procer-100 px-4 py-3">
+              <p className="text-xs text-ink/50">
+                Último ponto: <span className="font-semibold text-procer-700">{user.lastPunch}</span>
+              </p>
+              <div className="mt-3 grid grid-cols-3 gap-2">
+                <button
+                  type="button"
+                  onClick={onResetPassword}
+                  className="flex flex-col items-center gap-1 rounded-xl bg-procer-50 px-2 py-2.5 text-[11px] font-semibold text-procer-700 transition active:bg-procer-100"
+                >
+                  <Icon name="keyRound" />
+                  Nova senha
+                </button>
+                <button
+                  type="button"
+                  onClick={onToggleRole}
+                  disabled={isSelf}
+                  className="flex flex-col items-center gap-1 rounded-xl bg-procer-50 px-2 py-2.5 text-[11px] font-semibold text-procer-700 transition active:bg-procer-100 disabled:opacity-40"
+                >
+                  <Icon name="shieldCheck" />
+                  {isAdmin ? "Despromover" : "Promover"}
+                </button>
+                <button
+                  type="button"
+                  onClick={onDelete}
+                  disabled={isSelf}
+                  className="flex flex-col items-center gap-1 rounded-xl bg-wheat-100 px-2 py-2.5 text-[11px] font-semibold text-wheat-600 transition active:bg-wheat-300 disabled:opacity-40"
+                >
+                  <Icon name="trash" />
+                  Excluir
+                </button>
+              </div>
+              {isSelf && (
+                <p className="mt-2 text-[10px] text-ink/40">
+                  Você não pode alterar o próprio papel ou se excluir.
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    function EquipeTab({ users, currentUserId, userOps, isAdmin }) {
+      const [search, setSearch] = useState("");
+      const [expandedId, setExpandedId] = useState(null);
+      const [showCreate, setShowCreate] = useState(false);
+      const [submitting, setSubmitting] = useState(false);
+      const emptyDraft = { username: "", password: "", displayName: "", title: "", role: ROLE.COLABORADOR };
+      const [draft, setDraft] = useState(emptyDraft);
+
+      const visible = useMemo(() => {
+        const q = search.toLowerCase().trim();
+        if (!q) return users;
+        return users.filter((u) =>
+          [u.displayName, u.title, u.username, u.role].some((f) => f.toLowerCase().includes(q))
+        );
+      }, [users, search]);
+
+      const submit = async (e) => {
+        e.preventDefault();
+        if (submitting) return;
+        setSubmitting(true);
+        try {
+          const ok = await userOps.create(draft);
+          if (ok) {
+            setDraft(emptyDraft);
+            setShowCreate(false);
+          }
+        } finally {
+          setSubmitting(false);
+        }
+      };
+
+      return (
+        <div className="space-y-4">
+          {/* Cabeçalho com contador e CTA de criação */}
+          <div className="rounded-[1.75rem] bg-white p-5 shadow-card">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-bold text-procer-900">Equipe</h3>
+                <p className="text-xs text-ink/50">{users.length} usuários cadastrados</p>
+              </div>
+              {isAdmin && (
+                <button
+                  type="button"
+                  onClick={() => setShowCreate((v) => !v)}
+                  className="flex items-center gap-1.5 rounded-2xl bg-procer-800 px-3 py-2 text-xs font-semibold text-white shadow-cta"
+                >
+                  <Icon name="plus" />
+                  {showCreate ? "Cancelar" : "Novo"}
+                </button>
+              )}
+            </div>
+
+            {showCreate && isAdmin && (
+              <form onSubmit={submit} className="mt-4 space-y-3 border-t border-procer-100 pt-4">
+                <Field
+                  id="new-username"
+                  label="Usuário (login)"
+                  value={draft.username}
+                  onChange={(e) => setDraft((p) => ({ ...p, username: e.target.value }))}
+                  placeholder="ex.: joao.silva"
+                  autoComplete="off"
+                />
+                <Field
+                  id="new-password"
+                  label="Senha inicial"
+                  type="password"
+                  value={draft.password}
+                  onChange={(e) => setDraft((p) => ({ ...p, password: e.target.value }))}
+                  placeholder="Mínimo 6 caracteres"
+                  autoComplete="new-password"
+                />
+                <Field
+                  id="new-displayname"
+                  label="Nome completo"
+                  value={draft.displayName}
+                  onChange={(e) => setDraft((p) => ({ ...p, displayName: e.target.value }))}
+                  placeholder="João da Silva"
+                />
+                <Field
+                  id="new-title"
+                  label="Cargo"
+                  value={draft.title}
+                  onChange={(e) => setDraft((p) => ({ ...p, title: e.target.value }))}
+                  placeholder="Ex.: Téc. de Termometria"
+                />
+                <div>
+                  <label htmlFor="new-role" className="mb-1 block text-sm font-semibold text-procer-800">Papel</label>
+                  <select
+                    id="new-role"
+                    value={draft.role}
+                    onChange={(e) => setDraft((p) => ({ ...p, role: e.target.value }))}
+                    className="h-12 w-full rounded-2xl border border-procer-200 bg-white px-4 text-ink outline-none focus:border-procer-600 focus:ring-2 focus:ring-procer-100"
+                  >
+                    <option value={ROLE.COLABORADOR}>Colaborador</option>
+                    <option value={ROLE.ADMIN}>Administrador</option>
+                  </select>
+                </div>
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-procer-800 font-semibold text-white shadow-cta disabled:opacity-60"
+                >
+                  <Icon name="plus" />
+                  {submitting ? "Cadastrando..." : "Cadastrar usuário"}
+                </button>
+              </form>
+            )}
+          </div>
+
+          {/* Busca */}
+          <div className="rounded-[1.75rem] bg-white p-5 shadow-card">
+            <div className="relative">
+              <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-procer-400">
+                <Icon name="search" />
+              </span>
+              <label htmlFor="emp-search" className="sr-only">Buscar usuário</label>
+              <input
+                id="emp-search"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Buscar por nome, cargo ou login"
+                className="h-12 w-full rounded-2xl border border-procer-200 bg-white pl-9 pr-4 outline-none focus:border-procer-600 focus:ring-2 focus:ring-procer-100"
+              />
+            </div>
+
+            <div className="mt-4 space-y-2">
+              {visible.length === 0 && (
+                <p className="text-sm text-ink/50">Nenhum usuário encontrado.</p>
+              )}
+              {visible.map((user) => (
+                <UserRow
+                  key={user.id}
+                  user={user}
+                  isSelf={user.id === currentUserId}
+                  expanded={expandedId === user.id}
+                  onToggleExpand={() => setExpandedId((cur) => (cur === user.id ? null : user.id))}
+                  onResetPassword={() => userOps.resetPassword(user.id)}
+                  onToggleRole={() => userOps.toggleRole(user.id)}
+                  onDelete={() => userOps.remove(user.id)}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // -------------------------------------------------------------------
+    // Aba Resumo
+    // -------------------------------------------------------------------
+    function ResumoTab({ users, punches, onClear }) {
+      const todayCount = useMemo(() => {
+        const today = new Date().toDateString();
+        return punches.filter((p) => p.ts && new Date(p.ts).toDateString() === today).length;
+      }, [punches]);
+
+      const adminCount = useMemo(
+        () => users.filter((u) => u.role === ROLE.ADMIN).length,
+        [users]
+      );
+
+      return (
+        <div className="space-y-4">
+          <div className="rounded-[1.75rem] bg-white p-5 shadow-card">
+            <h3 className="text-lg font-bold text-procer-900">Resumo rápido</h3>
+            <div className="mt-4 grid grid-cols-3 gap-2 text-sm">
+              <div className="rounded-2xl bg-procer-50 p-3">
+                <p className="text-[9px] font-semibold uppercase tracking-wider text-procer-600">Usuários</p>
+                <p className="mt-1 text-xl font-extrabold text-procer-900">{users.length}</p>
+              </div>
+              <div className="rounded-2xl bg-procer-50 p-3">
+                <p className="text-[9px] font-semibold uppercase tracking-wider text-procer-600">Admins</p>
+                <p className="mt-1 text-xl font-extrabold text-procer-900">{adminCount}</p>
+              </div>
+              <div className="rounded-2xl bg-wheat-50 p-3">
+                <p className="text-[9px] font-semibold uppercase tracking-wider text-wheat-600">Pontos hoje</p>
+                <p className="mt-1 text-xl font-extrabold text-procer-900">{todayCount}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-[1.75rem] bg-white p-5 shadow-card">
+            <h3 className="text-lg font-bold text-procer-900">Recursos do app</h3>
+            <div className="mt-4 space-y-3 text-sm text-ink/70">
+              <div className="flex items-start gap-2"><Icon name="user" className="mt-0.5 h-4 w-4 text-procer-600" /> Login por usuário e senha</div>
+              <div className="flex items-start gap-2"><Icon name="mapPin" className="mt-0.5 h-4 w-4 text-procer-600" /> Validação opcional de localização</div>
+              <div className="flex items-start gap-2"><Icon name="calendarClock" className="mt-0.5 h-4 w-4 text-procer-600" /> Registro de entrada e saída</div>
+              <div className="flex items-start gap-2"><Icon name="users" className="mt-0.5 h-4 w-4 text-procer-600" /> Cadastro e consulta de equipe</div>
+            </div>
+          </div>
+
+          <div className="rounded-[1.75rem] bg-procer-800 p-5 text-white shadow-card">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-wheat-300">Sobre a Procer</p>
+            <p className="mt-2 text-sm leading-6 text-white/80">
+              Pioneira da América Latina em termometria digital. Agrointeligência aplicada à preservação de cada grão no pós-colheita.
+            </p>
+            <p className="mt-3 text-[10px] uppercase tracking-widest text-white/40">Criciúma/SC · 13 países</p>
+          </div>
+
+          <button type="button" onClick={onClear}
+            className="w-full rounded-2xl border border-procer-200 bg-white p-4 text-sm font-semibold text-procer-700">
+            Limpar dados locais
+          </button>
+        </div>
+      );
+    }
+
+    // -------------------------------------------------------------------
+    // App
+    // -------------------------------------------------------------------
+    function App() {
+      const [session, setSession] = usePersistedState(`${STORAGE_KEY}:session`, null);
+      const [users, setUsers] = usePersistedState(`${STORAGE_KEY}:users`, INITIAL_USERS);
+      const [punches, setPunches] = usePersistedState(`${STORAGE_KEY}:punches`, []);
+      const [activeTab, setActiveTab] = useState(TAB.PONTO);
+      const geo = useGeolocation();
+      const { toast, show: showToast } = useToast();
+
+      const isAdmin = session?.role === ROLE.ADMIN;
+
+      // Se a sessão atual aponta para um usuário que foi excluído ou rebaixado,
+      // sincroniza com o estado real.
+      useEffect(() => {
+        if (!session) return;
+        const me = users.find((u) => u.id === session.id);
+        if (!me) {
+          setSession(null);
+          return;
+        }
+        if (me.role !== session.role || me.displayName !== session.displayName || me.title !== session.title) {
+          setSession({
+            id: me.id,
+            username: me.username,
+            role: me.role,
+            displayName: me.displayName,
+            title: me.title,
+          });
+        }
+      }, [users, session, setSession]);
+
+      useEffect(() => {
+        if (!isAdmin && activeTab === TAB.EQUIPE) setActiveTab(TAB.PONTO);
+      }, [isAdmin, activeTab]);
+
+      const registerPunch = useCallback((type) => {
+        const lastType = punches[0]?.type;
+        if (type === PUNCH_TYPE.ENTRADA && lastType === PUNCH_TYPE.ENTRADA) {
+          showToast("Já existe uma entrada em aberto.", TOAST.ERROR); return;
+        }
+        if (type === PUNCH_TYPE.SAIDA && lastType !== PUNCH_TYPE.ENTRADA) {
+          showToast("Não há entrada em aberto para fechar.", TOAST.ERROR); return;
+        }
+        const time = formatHHMM();
+        const location = geo.coords
+          ? `${geo.coords.lat.toFixed(4)}, ${geo.coords.lng.toFixed(4)}`
+          : "Registro remoto";
+        setPunches((prev) => [{ id: newId(), type, time, location, ts: Date.now() }, ...prev]);
+        showToast(`${type} registrada às ${time}.`, TOAST.SUCCESS);
+      }, [punches, geo.coords, setPunches, showToast]);
+
+      // Operações de gestão de usuários
+      const userOps = useMemo(() => ({
+        create: async ({ username, password, displayName, title, role }) => {
+          const u = (username || "").trim().toLowerCase();
+          const dn = (displayName || "").trim();
+          const t = (title || "").trim();
+          if (!u || !password || !dn || !t) {
+            showToast("Preencha todos os campos.", TOAST.ERROR);
+            return false;
+          }
+          if (!/^[a-z0-9._-]+$/.test(u)) {
+            showToast("Login deve conter apenas letras, números, ponto, hífen e underline.", TOAST.ERROR);
+            return false;
+          }
+          if (password.length < 6) {
+            showToast("Senha deve ter ao menos 6 caracteres.", TOAST.ERROR);
+            return false;
+          }
+          if (users.some((x) => x.username === u)) {
+            showToast("Já existe usuário com esse login.", TOAST.ERROR);
+            return false;
+          }
+          const passwordHash = await sha256(password);
+          setUsers((prev) => [
+            {
+              id: newId(),
+              username: u,
+              passwordHash,
+              role: role === ROLE.ADMIN ? ROLE.ADMIN : ROLE.COLABORADOR,
+              displayName: dn,
+              title: t,
+              status: STATUS.OFFLINE,
+              lastPunch: "Sem registro",
+            },
+            ...prev,
+          ]);
+          showToast("Usuário cadastrado.", TOAST.SUCCESS);
+          return true;
+        },
+        resetPassword: async (userId) => {
+          const target = users.find((x) => x.id === userId);
+          if (!target) return;
+          const newPwd = window.prompt(`Nova senha para ${target.displayName} (mínimo 6 caracteres):`);
+          if (newPwd === null) return;
+          if (newPwd.length < 6) {
+            showToast("Senha deve ter ao menos 6 caracteres.", TOAST.ERROR);
+            return;
+          }
+          const passwordHash = await sha256(newPwd);
+          setUsers((prev) => prev.map((x) => (x.id === userId ? { ...x, passwordHash } : x)));
+          showToast(`Senha de ${target.displayName} redefinida.`, TOAST.SUCCESS);
+        },
+        toggleRole: (userId) => {
+          if (userId === session?.id) {
+            showToast("Você não pode alterar o próprio papel.", TOAST.ERROR);
+            return;
+          }
+          const target = users.find((x) => x.id === userId);
+          if (!target) return;
+          // Bloqueia rebaixar o último admin
+          const isLastAdmin =
+            target.role === ROLE.ADMIN &&
+            users.filter((x) => x.role === ROLE.ADMIN).length === 1;
+          if (isLastAdmin) {
+            showToast("Não é possível rebaixar o último administrador.", TOAST.ERROR);
+            return;
+          }
+          const newRole = target.role === ROLE.ADMIN ? ROLE.COLABORADOR : ROLE.ADMIN;
+          if (!window.confirm(`Alterar ${target.displayName} para ${newRole === ROLE.ADMIN ? "Administrador" : "Colaborador"}?`)) return;
+          setUsers((prev) => prev.map((x) => (x.id === userId ? { ...x, role: newRole } : x)));
+          showToast("Papel atualizado.", TOAST.SUCCESS);
+        },
+        remove: (userId) => {
+          if (userId === session?.id) {
+            showToast("Você não pode excluir a si mesmo.", TOAST.ERROR);
+            return;
+          }
+          const target = users.find((x) => x.id === userId);
+          if (!target) return;
+          const isLastAdmin =
+            target.role === ROLE.ADMIN &&
+            users.filter((x) => x.role === ROLE.ADMIN).length === 1;
+          if (isLastAdmin) {
+            showToast("Não é possível excluir o último administrador.", TOAST.ERROR);
+            return;
+          }
+          if (!window.confirm(`Excluir ${target.displayName}?`)) return;
+          setUsers((prev) => prev.filter((x) => x.id !== userId));
+          showToast(`${target.displayName} excluído.`, TOAST.SUCCESS);
+        },
+      }), [users, setUsers, showToast, session]);
+
+      const loginHandlers = useMemo(() => ({
+        success: (payload) => {
+          setSession(payload);
+          showToast(`Bem-vindo, ${payload.displayName}.`, TOAST.SUCCESS);
+        },
+        error: (msg) => showToast(msg, TOAST.ERROR),
+      }), [setSession, showToast]);
+
+      const logout = () => {
+        setSession(null);
+        setActiveTab(TAB.PONTO);
+      };
+
+      const clearAll = () => {
+        if (!confirm("Limpar todos os dados locais (pontos e usuários cadastrados)?")) return;
+        setPunches([]);
+        setUsers(INITIAL_USERS);
+        showToast("Dados locais restaurados ao padrão.", TOAST.INFO);
+      };
+
+      if (!session) return <LoginScreen users={users} onLogin={loginHandlers} toast={toast} />;
+
+      return (
+        <div className="min-h-screen bg-cream text-ink">
+          <div className="mx-auto flex min-h-screen max-w-md flex-col">
+            {/* Header com marca Procer */}
+            <header className="bg-procer-800 px-4 pb-5 pt-4 text-white safe-top">
+              <div className="flex items-center justify-between">
+                <ProcerLogo variant="light" size="md" />
+                <button onClick={logout} type="button"
+                  className="rounded-2xl border border-white/20 px-3 py-2 text-xs font-semibold text-white">
+                  Sair
+                </button>
+              </div>
+              <div className="mt-4">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-wheat-300">
+                  Controle de Ponto · v{APP_VERSION}
+                </p>
+                <h1 className="mt-1 text-xl font-extrabold">Registro remoto</h1>
+              </div>
+            </header>
+
+            <main className="-mt-3 flex-1 rounded-t-[2rem] bg-cream px-4 pb-28 pt-5">
+              <Toast toast={toast} />
+
+              {activeTab === TAB.PONTO && (
+                <PontoTab session={session} geo={geo} punches={punches}
+                  onPunch={registerPunch}
+                  onRefresh={() => showToast("Dados atualizados.", TOAST.INFO)} />
+              )}
+              {activeTab === TAB.EQUIPE && (
+                <EquipeTab
+                  users={users}
+                  currentUserId={session.id}
+                  userOps={userOps}
+                  isAdmin={isAdmin}
+                />
+              )}
+              {activeTab === TAB.RESUMO && <ResumoTab users={users} punches={punches} onClear={clearAll} />}
+            </main>
+
+            <nav className="fixed bottom-0 left-0 right-0 border-t border-procer-100 bg-white/95 px-4 py-3 backdrop-blur safe-bottom">
+              <div className="mx-auto flex max-w-md gap-2">
+                <TabButton active={activeTab === TAB.PONTO} iconName="clock3" label="Ponto" onClick={() => setActiveTab(TAB.PONTO)} />
+                {isAdmin && <TabButton active={activeTab === TAB.EQUIPE} iconName="users" label="Equipe" onClick={() => setActiveTab(TAB.EQUIPE)} />}
+                <TabButton active={activeTab === TAB.RESUMO} iconName="calendarClock" label="Resumo" onClick={() => setActiveTab(TAB.RESUMO)} />
+              </div>
+            </nav>
+          </div>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(<App />);
+  </script>
+</body>
+</html>
