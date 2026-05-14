@@ -105,8 +105,16 @@
     // -------------------------------------------------------------------
     const APP_NAME = "Procer Equipe";
     const APP_TAGLINE = "Agrointeligência de pós-colheita";
-    const APP_VERSION = "2.0.0";
-    const STORAGE_KEY = "procer_equipe_v2";
+    const APP_VERSION = "2.1.0";
+
+    // Chave raiz estável — nunca muda entre versões do HTML.
+    // Mudanças de schema são tratadas via defaults por campo, não por bump de chave.
+    const STORAGE_ROOT = "procer_equipe";
+    // Legado: chaves antigas que podem ter dados do colaborador
+    const LEGACY_STORAGE_KEYS = [
+      "procer_equipe_v2", "procer_equipe_v1",
+      "procer_ponto_v3",  "procer_ponto_v2", "procer_ponto_v1",
+    ];
 
     const ROLE = { ADMIN: "admin", COLABORADOR: "colaborador" };
 
@@ -266,39 +274,75 @@
       return false;
     };
 
-    const daysBetween = (iso1, iso2) => {
-      const d1 = new Date(iso1 + "T00:00:00");
-      const d2 = new Date(iso2 + "T00:00:00");
-      return Math.round((d2 - d1) / 86400000);
+    const isWeekend = (iso) => {
+      const dow = new Date(iso + "T00:00:00").getDay();
+      return dow === 0 || dow === 6; // Dom=0, Sáb=6
     };
 
+    // Retorna datas estritamente ENTRE iso1 e iso2 (exclusivo de ambos)
+    const getDatesBetween = (iso1, iso2) => {
+      const dates = [];
+      const curr = new Date(iso1 + "T00:00:00");
+      curr.setDate(curr.getDate() + 1);
+      const end = new Date(iso2 + "T00:00:00");
+      while (curr < end) {
+        dates.push(todayISO(new Date(curr)));
+        curr.setDate(curr.getDate() + 1);
+      }
+      return dates;
+    };
+
+    // 1 folga a cada FOLGA_THRESHOLD dias corridos em roteiro.
+    // Sábados e domingos SEM registro entre dois dias away são preenchidos automaticamente.
+    // Um Sáb/Dom REGISTRADO como folga/férias/atestado-em-casa quebra a sequência.
     function calcFolgaStats(userRegistros) {
       const sorted = [...userRegistros].sort((a, b) => a.date.localeCompare(b.date));
 
       let folgasEarned = 0;
       let currentStreak = 0;
       let totalAwayDays = 0;
-      let prevDate = null;
+      let autoWeekendDays = 0;
+      let lastAwayDate = null;
+
+      const closeStreak = () => {
+        folgasEarned += Math.floor(currentStreak / FOLGA_THRESHOLD);
+        currentStreak = 0;
+        lastAwayDate = null;
+      };
 
       for (const reg of sorted) {
         if (isAwayDay(reg)) {
-          if (prevDate && daysBetween(prevDate, reg.date) === 1) {
-            currentStreak++;
+          if (lastAwayDate !== null) {
+            const diff = daysBetween(lastAwayDate, reg.date);
+            if (diff === 1) {
+              // Dias consecutivos — continua
+              currentStreak++;
+              totalAwayDays++;
+            } else {
+              const gapDays = getDatesBetween(lastAwayDate, reg.date);
+              const allWeekend = gapDays.length > 0 && gapDays.every(isWeekend);
+              if (allWeekend) {
+                // Fim de semana em roteiro: preenche automaticamente
+                currentStreak += gapDays.length + 1;
+                totalAwayDays += gapDays.length + 1;
+                autoWeekendDays += gapDays.length;
+              } else {
+                // Gap com dia útil sem registro — quebra
+                closeStreak();
+                currentStreak = 1;
+                totalAwayDays++;
+              }
+            }
           } else {
-            // Encerra sequência anterior, inicia nova
-            folgasEarned += Math.floor(currentStreak / FOLGA_THRESHOLD);
-            currentStreak = 1;
+            currentStreak++;
+            totalAwayDays++;
           }
-          totalAwayDays++;
-          prevDate = reg.date;
+          lastAwayDate = reg.date;
         } else {
-          // Dia "em casa" quebra a sequência
-          folgasEarned += Math.floor(currentStreak / FOLGA_THRESHOLD);
-          currentStreak = 0;
-          prevDate = reg.date;
+          // Dia em casa (registrado) — quebra sequência
+          closeStreak();
         }
       }
-      // Sequência ainda em curso (não encerrada por dia "em casa")
       folgasEarned += Math.floor(currentStreak / FOLGA_THRESHOLD);
 
       const folgasTaken = userRegistros.filter((r) => r.type === REGISTRO_TYPE.FOLGA).length;
@@ -306,14 +350,18 @@
       const blockProgress = currentStreak % FOLGA_THRESHOLD;
       const daysToNext = blockProgress === 0 ? FOLGA_THRESHOLD : FOLGA_THRESHOLD - blockProgress;
 
+      // Total de dias trabalhados: trabalhado + manutenção + hospedado + fins de semana auto
+      const totalWorkedDays =
+        userRegistros.filter((r) =>
+          r.type === REGISTRO_TYPE.TRABALHADO ||
+          r.type === REGISTRO_TYPE.MANUTENCAO ||
+          r.type === REGISTRO_TYPE.HOSPEDADO
+        ).length + autoWeekendDays;
+
       return {
-        totalAwayDays,
-        folgasEarned,
-        folgasTaken,
-        saldo,
-        currentStreak,
-        blockProgress,
-        daysToNext,
+        totalAwayDays, totalWorkedDays, autoWeekendDays,
+        folgasEarned, folgasTaken, saldo,
+        currentStreak, blockProgress, daysToNext,
         onRoteiro: currentStreak > 0,
       };
     }
@@ -378,13 +426,43 @@
     }
 
     // -------------------------------------------------------------------
-    // Hooks (idênticos à versão anterior)
+    // Migração de storage legado + usePersistedState robusto
     // -------------------------------------------------------------------
+
+    // Aplica defaults por campo em um array de usuários (tolerante a schemas antigos)
+    const applyUserDefaults = (arr) =>
+      (Array.isArray(arr) ? arr : []).map((u) => ({
+        status: STATUS.OFFLINE,
+        homeCity: "",
+        role: ROLE.COLABORADOR,
+        ...u,
+      }));
+
+    // Migração one-shot: ao inicializar, lê dados de chaves legadas caso a
+    // chave estável esteja vazia. Executa ANTES do React montar.
+    (() => {
+      for (const sub of ["users", "registros", "session"]) {
+        const newKey = `${STORAGE_ROOT}:${sub}`;
+        if (window.localStorage.getItem(newKey)) continue;
+        for (const legacy of LEGACY_STORAGE_KEYS) {
+          const old = window.localStorage.getItem(`${legacy}:${sub}`);
+          if (old) { window.localStorage.setItem(newKey, old); break; }
+        }
+      }
+    })();
+
     function usePersistedState(key, initialValue) {
       const [state, setState] = useState(() => {
         try {
           const raw = window.localStorage.getItem(key);
-          return raw ? JSON.parse(raw) : initialValue;
+          if (!raw) return initialValue;
+          const parsed = JSON.parse(raw);
+          // Aplica defaults em arrays de usuários para tolerar campos ausentes
+          if (key.endsWith(":users") && Array.isArray(parsed)) {
+            const fixed = applyUserDefaults(parsed);
+            return fixed.length ? fixed : initialValue;
+          }
+          return parsed;
         } catch { return initialValue; }
       });
       useEffect(() => {
@@ -392,6 +470,7 @@
       }, [key, state]);
       return [state, setState];
     }
+
 
     function useClock() {
       const [clock, setClock] = useState(formatClock);
@@ -583,6 +662,39 @@
                   <p className="text-center text-xs text-ink/40">
                     Acesso restrito a colaboradores Procer.
                   </p>
+                  <label className="flex items-center justify-center gap-2 cursor-pointer rounded-2xl border border-procer-200 p-3 text-xs font-semibold text-procer-700">
+                    <Icon name="refreshCw" className="h-3.5 w-3.5" />
+                    Primeiro acesso neste dispositivo? Importar usuários
+                    <input
+                      type="file"
+                      accept=".json"
+                      className="sr-only"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        const reader = new FileReader();
+                        reader.onload = (ev) => {
+                          try {
+                            const data = JSON.parse(ev.target.result);
+                            if (!Array.isArray(data)) throw new Error("Formato inválido");
+                            const valid = applyUserDefaults(data).filter((u) => u.id && u.username && u.passwordHash);
+                            if (!valid.length) { alert("Nenhum usuário válido no arquivo."); return; }
+                            // Salva direto no localStorage para que o LoginScreen leia via prop
+                            // O App vai recarregar a prop users ao detectar a mudança
+                            const key = `${STORAGE_ROOT}:users`;
+                            const existing = JSON.parse(window.localStorage.getItem(key) || "[]");
+                            const existingIds = new Set(existing.map((u) => u.id));
+                            const toAdd = valid.filter((u) => !existingIds.has(u.id));
+                            const merged = [...existing, ...toAdd];
+                            window.localStorage.setItem(key, JSON.stringify(merged));
+                            alert(`${valid.length} usuário(s) importado(s). Recarregue a página e faça login.`);
+                          } catch (err) { alert("Erro: " + err.message); }
+                        };
+                        reader.readAsText(file);
+                        e.target.value = "";
+                      }}
+                    />
+                  </label>
                 </form>
               </div>
 
@@ -997,18 +1109,47 @@
         setSubmitting(true);
         try {
           const ok = await userOps.create(draft);
-          if (ok) {
-            setDraft(emptyDraft);
-            setShowCreate(false);
-          }
+          if (ok) { setDraft(emptyDraft); setShowCreate(false); }
+        } catch (err) {
+          userOps.showError?.("Erro ao cadastrar: " + (err.message || "verifique os campos."));
         } finally {
           setSubmitting(false);
         }
       };
 
+      // Exporta lista de usuários (sem senhas em texto; apenas hashes) como JSON
+      const exportUsers = () => {
+        const data = JSON.stringify(users, null, 2);
+        const blob = new Blob([data], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `procer-usuarios-${todayISO()}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+      };
+
+      // Importa JSON de usuários (gerado pelo admin em outro dispositivo)
+      const importUsers = (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          try {
+            const imported = JSON.parse(ev.target.result);
+            if (!Array.isArray(imported)) throw new Error("Formato inválido");
+            userOps.mergeImport?.(imported);
+          } catch (err) {
+            alert("Erro ao importar: " + err.message);
+          }
+        };
+        reader.readAsText(file);
+        e.target.value = ""; // reset input
+      };
+
       return (
         <div className="space-y-4">
-          {/* Cabeçalho com contador e CTA de criação */}
+          {/* Cabeçalho com contador e CTAs */}
           <div className="rounded-[1.75rem] bg-white p-5 shadow-card">
             <div className="flex items-center justify-between">
               <div>
@@ -1016,15 +1157,43 @@
                 <p className="text-xs text-ink/50">{users.length} usuários cadastrados</p>
               </div>
               {isAdmin && (
-                <button
-                  type="button"
-                  onClick={() => setShowCreate((v) => !v)}
-                  className="flex items-center gap-1.5 rounded-2xl bg-procer-800 px-3 py-2 text-xs font-semibold text-white shadow-cta"
-                >
-                  <Icon name="plus" />
-                  {showCreate ? "Cancelar" : "Novo"}
-                </button>
+                <div className="flex items-center gap-1.5">
+                  <label
+                    title="Importar usuários de outro dispositivo"
+                    className="cursor-pointer flex items-center justify-center h-9 w-9 rounded-2xl bg-procer-50 text-procer-700 transition hover:bg-procer-100"
+                  >
+                    <Icon name="refreshCw" />
+                    <input type="file" accept=".json" className="sr-only" onChange={importUsers} />
+                  </label>
+                  <button
+                    type="button"
+                    onClick={exportUsers}
+                    title="Exportar usuários para outro dispositivo"
+                    className="flex items-center justify-center h-9 w-9 rounded-2xl bg-procer-50 text-procer-700 transition hover:bg-procer-100"
+                  >
+                    <Icon name="logOut" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowCreate((v) => !v)}
+                    className="flex items-center gap-1.5 rounded-2xl bg-procer-800 px-3 py-2 text-xs font-semibold text-white shadow-cta"
+                  >
+                    <Icon name="plus" />
+                    {showCreate ? "Cancelar" : "Novo"}
+                  </button>
+                </div>
               )}
+            </div>
+
+            {isAdmin && (
+              <div className="mt-3 flex items-start gap-2 rounded-2xl bg-procer-50 px-3 py-2 text-[11px] text-procer-700">
+                <Icon name="refreshCw" className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                <span>
+                  Usuários são salvos localmente. Para sincronizar com outros dispositivos:
+                  <strong> exporte (↗)</strong> no dispositivo do admin e <strong>importe (↺)</strong> nos demais.
+                </span>
+              </div>
+            )}
             </div>
 
             {showCreate && isAdmin && (
@@ -1235,6 +1404,19 @@
             <MetricCard type={REGISTRO_TYPE.HOSPEDADO}  count={counts[REGISTRO_TYPE.HOSPEDADO]} />
           </div>
 
+          {/* Total de dias trabalhados (histórico) */}
+          <div className="rounded-[1.75rem] bg-procer-800 p-5 text-white shadow-card">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-wheat-300">
+              Total de dias trabalhados
+            </p>
+            <p className="mt-1 text-4xl font-extrabold tabular-nums">{folgaStats.totalWorkedDays}</p>
+            <p className="mt-2 text-xs text-white/60">
+              Inclui: trabalhado + manutenção + hospedado
+              {folgaStats.autoWeekendDays > 0 && ` + ${folgaStats.autoWeekendDays} fim${folgaStats.autoWeekendDays === 1 ? "" : "s"} de semana em roteiro`}
+            </p>
+            <p className="mt-1 text-[10px] text-white/40">Histórico completo · saldo acumulado</p>
+          </div>
+
           {/* Saldo de folgas — regra 10:1 */}
           <div className="rounded-[1.75rem] bg-white p-5 shadow-card">
             <div className="flex items-start justify-between gap-2">
@@ -1302,7 +1484,23 @@
               </div>
             )}
 
-            {folgaStats.saldo > 0 && (
+            {folgaStats.saldo >= 3 && (
+              <div className="mt-3 flex items-start gap-2 rounded-2xl border border-rose-300 bg-rose-50 px-3 py-2.5 text-xs">
+                <Icon name="sun" className="mt-0.5 h-4 w-4 shrink-0 text-rose-500" />
+                <div>
+                  <p className="font-bold text-rose-700">
+                    ⚠ Atenção — {folgaStats.saldo} folga{folgaStats.saldo === 1 ? "" : "s"} acumulada{folgaStats.saldo === 1 ? "" : "s"}
+                  </p>
+                  <p className="mt-0.5 text-rose-600">
+                    {targetUserId === session.id
+                      ? "Comunique ao gestor para programar sua folga."
+                      : `${targetUser.displayName.split(" ")[0]} atingiu o limite de alerta. Programar folga.`}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {folgaStats.saldo > 0 && folgaStats.saldo < 3 && (
               <div className="mt-3 flex items-start gap-2 rounded-2xl bg-wheat-50 px-3 py-2 text-xs">
                 <Icon name="sun" className="mt-0.5 h-4 w-4 shrink-0 text-wheat-600" />
                 <p className="font-semibold text-wheat-600">
@@ -1416,9 +1614,9 @@
     // App
     // -------------------------------------------------------------------
     function App() {
-      const [session, setSession] = usePersistedState(`${STORAGE_KEY}:session`, null);
-      const [users, setUsers] = usePersistedState(`${STORAGE_KEY}:users`, INITIAL_USERS);
-      const [registros, setRegistros] = usePersistedState(`${STORAGE_KEY}:registros`, []);
+      const [session, setSession] = usePersistedState(`${STORAGE_ROOT}:session`, null);
+      const [users, setUsers] = usePersistedState(`${STORAGE_ROOT}:users`, INITIAL_USERS);
+      const [registros, setRegistros] = usePersistedState(`${STORAGE_ROOT}:registros`, []);
       const [activeTab, setActiveTab] = useState(TAB.DASHBOARD);
       const geo = useGeolocation();
       const { toast, show: showToast } = useToast();
@@ -1564,6 +1762,27 @@
           setUsers((prev) => prev.map((x) => (x.id === userId ? { ...x, role: newRole } : x)));
           showToast("Papel atualizado.", TOAST.SUCCESS);
         },
+        mergeImport: (imported) => {
+          try {
+            const valid = applyUserDefaults(imported).filter((u) => u.id && u.username && u.passwordHash);
+            if (!valid.length) { showToast("Nenhum usuário válido encontrado no arquivo.", TOAST.ERROR); return; }
+            setUsers((prev) => {
+              const existingIds = new Set(prev.map((u) => u.id));
+              const existingUsernames = new Set(prev.map((u) => u.username));
+              const toAdd = valid.filter((u) => !existingIds.has(u.id) && !existingUsernames.has(u.username));
+              const toUpdate = valid.filter((u) => existingIds.has(u.id));
+              const merged = prev.map((u) => {
+                const upd = toUpdate.find((x) => x.id === u.id);
+                return upd ? { ...u, ...upd } : u;
+              });
+              return [...merged, ...toAdd];
+            });
+            showToast(`${valid.length} usuário(s) importado(s) com sucesso.`, TOAST.SUCCESS);
+          } catch (err) {
+            showToast("Erro ao importar usuários: " + err.message, TOAST.ERROR);
+          }
+        },
+        showError: (msg) => showToast(msg, TOAST.ERROR),
         remove: (userId) => {
           if (userId === session?.id) {
             showToast("Você não pode excluir a si mesmo.", TOAST.ERROR);
