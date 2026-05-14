@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#0F3D2A" />
+  <meta name="theme-color" content="#0F2156" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="Procer Ponto" />
-  <title>Procer · Controle de Ponto</title>
+  <meta name="apple-mobile-web-app-title" content="Procer Equipe" />
+  <title>Procer · Controle de Equipe</title>
 
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230F3D2A'/%3E%3Ccircle cx='28' cy='50' r='6' fill='%23D4A82C'/%3E%3Ccircle cx='50' cy='50' r='8' fill='%23E8C354'/%3E%3Ccircle cx='75' cy='50' r='6' fill='%23D4A82C'/%3E%3C/svg%3E" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230F2156'/%3E%3Ccircle cx='28' cy='50' r='6' fill='%23FBBF24'/%3E%3Ccircle cx='50' cy='50' r='8' fill='%23FCD34D'/%3E%3Ccircle cx='75' cy='50' r='6' fill='%23FBBF24'/%3E%3C/svg%3E" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -23,34 +23,34 @@
         extend: {
           colors: {
             procer: {
-              50:  "#F0F8F3",
-              100: "#DCEFE3",
-              200: "#B6DCC4",
-              300: "#7CC093",
-              400: "#4DA371",
-              500: "#2D8A5E",
-              600: "#1F6E48",
-              700: "#155739",
-              800: "#0F3D2A",
-              900: "#0A2A1C",
+              50:  "#EFF6FF",
+              100: "#DBEAFE",
+              200: "#BFDBFE",
+              300: "#93C5FD",
+              400: "#60A5FA",
+              500: "#3B82F6",
+              600: "#2563EB",
+              700: "#1D4ED8",
+              800: "#1E3A8A",
+              900: "#0F2156",
             },
             wheat: {
-              50:  "#FBF7E8",
-              100: "#FBF1D3",
-              300: "#EFD27A",
-              400: "#E0B137",
-              500: "#D4A82C",
-              600: "#A88420",
+              50:  "#FFFBEB",
+              100: "#FEF3C7",
+              300: "#FCD34D",
+              400: "#FBBF24",
+              500: "#F59E0B",
+              600: "#D97706",
             },
-            cream: "#FAF6EC",
-            ink:   "#0B1B14",
+            cream: "#F4F7FB",
+            ink:   "#0B1B2B",
           },
           fontFamily: {
             sans: ['Manrope', 'system-ui', '-apple-system', 'sans-serif'],
           },
           boxShadow: {
-            'card': '0 1px 2px rgba(15,61,42,0.06), 0 4px 16px rgba(15,61,42,0.04)',
-            'cta':  '0 8px 24px -8px rgba(15,61,42,0.45)',
+            'card': '0 1px 2px rgba(15,33,86,0.06), 0 4px 16px rgba(15,33,86,0.05)',
+            'cta':  '0 8px 24px -8px rgba(37,99,235,0.45)',
           },
         }
       }
@@ -77,15 +77,15 @@
 
     /* Plano de fundo de "constelação" sutil no login — referência ao CERES Orion */
     .bg-constellation {
-      background-color: #0F3D2A;
+      background-color: #0F2156;
       background-image:
-        radial-gradient(circle at 18% 22%, rgba(255,255,255,0.08) 0 1.5px, transparent 2px),
-        radial-gradient(circle at 78% 14%, rgba(255,255,255,0.10) 0 1px, transparent 2px),
-        radial-gradient(circle at 42% 38%, rgba(255,255,255,0.06) 0 1px, transparent 2px),
-        radial-gradient(circle at 88% 52%, rgba(255,255,255,0.08) 0 1.5px, transparent 2px),
-        radial-gradient(circle at 28% 72%, rgba(255,255,255,0.05) 0 1px, transparent 2px),
-        radial-gradient(circle at 62% 84%, rgba(255,255,255,0.10) 0 1px, transparent 2px),
-        radial-gradient(circle at 8% 90%, rgba(255,255,255,0.06) 0 1px, transparent 2px);
+        radial-gradient(circle at 18% 22%, rgba(255,255,255,0.10) 0 1.5px, transparent 2px),
+        radial-gradient(circle at 78% 14%, rgba(255,255,255,0.12) 0 1px, transparent 2px),
+        radial-gradient(circle at 42% 38%, rgba(255,255,255,0.08) 0 1px, transparent 2px),
+        radial-gradient(circle at 88% 52%, rgba(255,255,255,0.10) 0 1.5px, transparent 2px),
+        radial-gradient(circle at 28% 72%, rgba(255,255,255,0.06) 0 1px, transparent 2px),
+        radial-gradient(circle at 62% 84%, rgba(255,255,255,0.12) 0 1px, transparent 2px),
+        radial-gradient(circle at 8% 90%, rgba(255,255,255,0.08) 0 1px, transparent 2px);
     }
 
     /* Marca d'água da Procer no canto */
@@ -103,16 +103,35 @@
     // -------------------------------------------------------------------
     // Constantes
     // -------------------------------------------------------------------
-    const APP_NAME = "Procer Ponto";
+    const APP_NAME = "Procer Equipe";
     const APP_TAGLINE = "Agrointeligência de pós-colheita";
-    const APP_VERSION = "1.0.0";
-    const STORAGE_KEY = "procer_ponto_v3";
+    const APP_VERSION = "2.0.0";
+    const STORAGE_KEY = "procer_equipe_v2";
 
     const ROLE = { ADMIN: "admin", COLABORADOR: "colaborador" };
 
-    const PUNCH_TYPE = { ENTRADA: "Entrada", SAIDA: "Saída" };
+    // Tipos de registro diário (sistema de controle de equipe)
+    const REGISTRO_TYPE = {
+      TRABALHADO:   "trabalhado",
+      MANUTENCAO:   "manutencao_veiculo",
+      FOLGA:        "folga",
+      ATESTADO:     "atestado",
+      FERIAS:       "ferias",
+      HOSPEDADO:    "hospedado",
+    };
+
+    // Meta de cada tipo: label, cor e ícone
+    const REGISTRO_META = {
+      [REGISTRO_TYPE.TRABALHADO]: { label: "Trabalhado",     short: "Trab.",   icon: "briefcase",   color: "procer",  shade: 600 },
+      [REGISTRO_TYPE.MANUTENCAO]: { label: "Manut. Veículo", short: "Manut.",  icon: "wrench",      color: "procer",  shade: 400 },
+      [REGISTRO_TYPE.FOLGA]:      { label: "Folga",          short: "Folga",   icon: "coffee",      color: "slate",   shade: 500 },
+      [REGISTRO_TYPE.ATESTADO]:   { label: "Atestado",       short: "Ates.",   icon: "thermometer", color: "rose",    shade: 500 },
+      [REGISTRO_TYPE.FERIAS]:     { label: "Férias",         short: "Férias",  icon: "sun",         color: "wheat",   shade: 500 },
+      [REGISTRO_TYPE.HOSPEDADO]:  { label: "Hospedado",      short: "Hosp.",   icon: "bed",         color: "indigo",  shade: 500 },
+    };
+
     const STATUS = { ONLINE: "Online", OFFLINE: "Offline" };
-    const TAB = { PONTO: "ponto", EQUIPE: "equipe", RESUMO: "resumo" };
+    const TAB = { DASHBOARD: "dashboard", REGISTRO: "registro", EQUIPE: "equipe", HISTORICO: "historico" };
     const TOAST = { INFO: "info", SUCCESS: "success", ERROR: "error" };
     const TOAST_TTL_MS = 3500;
 
@@ -127,8 +146,8 @@
         role: ROLE.ADMIN,
         displayName: "Alexssandre Lima",
         title: "Coord. de Implantações",
+        homeCity: "Palhoça/SC",
         status: STATUS.ONLINE,
-        lastPunch: "08:02",
       },
       {
         id: "u-fernanda",
@@ -138,8 +157,8 @@
         role: ROLE.COLABORADOR,
         displayName: "Fernanda Souza",
         title: "Supervisora Técnica",
+        homeCity: "Criciúma/SC",
         status: STATUS.ONLINE,
-        lastPunch: "08:31",
       },
       {
         id: "u-bruno",
@@ -149,8 +168,8 @@
         role: ROLE.COLABORADOR,
         displayName: "Bruno Costa",
         title: "Téc. de Termometria",
+        homeCity: "Criciúma/SC",
         status: STATUS.OFFLINE,
-        lastPunch: "17:04",
       },
       {
         id: "u-mariana",
@@ -160,8 +179,8 @@
         role: ROLE.COLABORADOR,
         displayName: "Mariana Alves",
         title: "Eng. de Automação",
+        homeCity: "Tubarão/SC",
         status: STATUS.ONLINE,
-        lastPunch: "13:01",
       },
     ];
 
@@ -181,15 +200,122 @@
       };
     };
 
-    const formatHHMM = (d = new Date()) =>
-      d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
-
     async function sha256(text) {
       const buf = new TextEncoder().encode(text);
       const hash = await crypto.subtle.digest("SHA-256", buf);
       return Array.from(new Uint8Array(hash))
         .map((b) => b.toString(16).padStart(2, "0"))
         .join("");
+    }
+
+    // Data no formato YYYY-MM-DD (TZ local)
+    const todayISO = (d = new Date()) => {
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return `${y}-${m}-${day}`;
+    };
+
+    const formatDateLong = (iso) => {
+      const [y, m, d] = iso.split("-").map(Number);
+      return new Date(y, m - 1, d).toLocaleDateString("pt-BR", {
+        weekday: "short", day: "2-digit", month: "short",
+      });
+    };
+
+    // YYYY-MM corrente
+    const currentYearMonth = () => {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+    };
+
+    // Tailwind precisa das classes em forma literal — pré-mapeamento por tipo
+    const TYPE_CLASSES = {
+      [REGISTRO_TYPE.TRABALHADO]: { bg: "bg-procer-600",  text: "text-white",       chip: "bg-procer-100 text-procer-700",  dot: "bg-procer-600" },
+      [REGISTRO_TYPE.MANUTENCAO]: { bg: "bg-procer-400",  text: "text-white",       chip: "bg-procer-50 text-procer-600",   dot: "bg-procer-400" },
+      [REGISTRO_TYPE.FOLGA]:      { bg: "bg-slate-500",   text: "text-white",       chip: "bg-slate-100 text-slate-700",    dot: "bg-slate-500" },
+      [REGISTRO_TYPE.ATESTADO]:   { bg: "bg-rose-500",    text: "text-white",       chip: "bg-rose-100 text-rose-700",      dot: "bg-rose-500" },
+      [REGISTRO_TYPE.FERIAS]:     { bg: "bg-wheat-500",   text: "text-procer-900",  chip: "bg-wheat-100 text-wheat-600",    dot: "bg-wheat-500" },
+      [REGISTRO_TYPE.HOSPEDADO]:  { bg: "bg-indigo-500",  text: "text-white",       chip: "bg-indigo-100 text-indigo-700",  dot: "bg-indigo-500" },
+    };
+
+    // ---- Regra de folga ----
+    // 1 folga a cada 10 dias CORRIDOS (consecutivos) em roteiro fora da cidade de moradia.
+    // Dias "em casa" (folga, férias, ou trabalho/manutenção/atestado na própria cidade)
+    // e gaps de registro quebram a sequência.
+    // Atestado durante roteiro: marca-se com o flag awayFromHome e conta como dia válido.
+    // A contagem é por roteiro, não cumulativa entre roteiros.
+    const FOLGA_THRESHOLD = 10;
+
+    // ---- Tolerância de registro retroativo ----
+    // Colaborador pode registrar até MAX_DAYS_BACK dias atrás. Além disso o dia
+    // fica permanentemente sem registro (e quebra a sequência de roteiro).
+    const MAX_DAYS_BACK = 3;
+
+    const isAwayDay = (reg) => {
+      if (!reg) return false;
+      if (reg.type === REGISTRO_TYPE.HOSPEDADO) return true;
+      // Trabalhado, manutenção e atestado podem estar "em roteiro" — flag explícita
+      if (
+        reg.type === REGISTRO_TYPE.TRABALHADO ||
+        reg.type === REGISTRO_TYPE.MANUTENCAO ||
+        reg.type === REGISTRO_TYPE.ATESTADO
+      ) {
+        return reg.awayFromHome === true;
+      }
+      return false;
+    };
+
+    const daysBetween = (iso1, iso2) => {
+      const d1 = new Date(iso1 + "T00:00:00");
+      const d2 = new Date(iso2 + "T00:00:00");
+      return Math.round((d2 - d1) / 86400000);
+    };
+
+    function calcFolgaStats(userRegistros) {
+      const sorted = [...userRegistros].sort((a, b) => a.date.localeCompare(b.date));
+
+      let folgasEarned = 0;
+      let currentStreak = 0;
+      let totalAwayDays = 0;
+      let prevDate = null;
+
+      for (const reg of sorted) {
+        if (isAwayDay(reg)) {
+          if (prevDate && daysBetween(prevDate, reg.date) === 1) {
+            currentStreak++;
+          } else {
+            // Encerra sequência anterior, inicia nova
+            folgasEarned += Math.floor(currentStreak / FOLGA_THRESHOLD);
+            currentStreak = 1;
+          }
+          totalAwayDays++;
+          prevDate = reg.date;
+        } else {
+          // Dia "em casa" quebra a sequência
+          folgasEarned += Math.floor(currentStreak / FOLGA_THRESHOLD);
+          currentStreak = 0;
+          prevDate = reg.date;
+        }
+      }
+      // Sequência ainda em curso (não encerrada por dia "em casa")
+      folgasEarned += Math.floor(currentStreak / FOLGA_THRESHOLD);
+
+      const folgasTaken = userRegistros.filter((r) => r.type === REGISTRO_TYPE.FOLGA).length;
+      const saldo = folgasEarned - folgasTaken;
+      const blockProgress = currentStreak % FOLGA_THRESHOLD;
+      const daysToNext = blockProgress === 0 ? FOLGA_THRESHOLD : FOLGA_THRESHOLD - blockProgress;
+
+      return {
+        totalAwayDays,
+        folgasEarned,
+        folgasTaken,
+        saldo,
+        currentStreak,
+        blockProgress,
+        daysToNext,
+        onRoteiro: currentStreak > 0,
+      };
     }
 
     // -------------------------------------------------------------------
@@ -213,6 +339,17 @@
       keyRound: (<><circle cx="7.5" cy="15.5" r="5.5" /><path d="m21 2-9.6 9.6" /><path d="m15.5 7.5 3 3L22 7l-3-3" /></>),
       shieldCheck: (<><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" /><path d="m9 12 2 2 4-4" /></>),
       chevronDown: <polyline points="6 9 12 15 18 9" />,
+      // Tipos de registro
+      briefcase: (<><rect width="20" height="14" x="2" y="7" rx="2" ry="2" /><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" /></>),
+      wrench: <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />,
+      coffee: (<><path d="M17 8h1a4 4 0 1 1 0 8h-1" /><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z" /><line x1="6" x2="6" y1="2" y2="4" /><line x1="10" x2="10" y1="2" y2="4" /><line x1="14" x2="14" y1="2" y2="4" /></>),
+      thermometer: <path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z" />,
+      sun: (<><circle cx="12" cy="12" r="4" /><path d="M12 2v2" /><path d="M12 20v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="m17.66 17.66 1.41 1.41" /><path d="M2 12h2" /><path d="M20 12h2" /><path d="m6.34 17.66-1.41 1.41" /><path d="m19.07 4.93-1.41 1.41" /></>),
+      bed: (<><path d="M2 4v16" /><path d="M2 8h18a2 2 0 0 1 2 2v10" /><path d="M2 17h20" /><path d="M6 8v9" /></>),
+      // Navegação
+      barChart: (<><line x1="12" x2="12" y1="20" y2="10" /><line x1="18" x2="18" y1="20" y2="4" /><line x1="6" x2="6" y1="20" y2="16" /></>),
+      history: (<><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /><path d="M3 3v5h5" /><path d="M12 7v5l4 2" /></>),
+      edit: (<><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></>),
     };
 
     const Icon = ({ name, className = "h-4 w-4", strokeWidth = 2, ...rest }) => (
@@ -379,6 +516,7 @@
             role: user.role,
             displayName: user.displayName,
             title: user.title,
+            homeCity: user.homeCity || "",
           });
         } catch (err) {
           onLogin.error("Falha ao validar credenciais.");
@@ -463,86 +601,287 @@
     }
 
     // -------------------------------------------------------------------
-    // Aba Ponto
+    // Aba Registro — registrar status do dia
     // -------------------------------------------------------------------
-    function PontoTab({ session, geo, punches, onPunch, onRefresh }) {
-      const lastType = punches[0]?.type;
-      const canEntrada = lastType !== PUNCH_TYPE.ENTRADA;
-      const canSaida = lastType === PUNCH_TYPE.ENTRADA;
+    function RegistroTab({ session, geo, registros, onRegister }) {
+      const [targetDate, setTargetDate] = useState(todayISO());
+      const [selected, setSelected] = useState(null);
+      const [observation, setObservation] = useState("");
+      const [awayFromHome, setAwayFromHome] = useState(false);
+      const [submitting, setSubmitting] = useState(false);
+
+      // Opções de data: hoje + MAX_DAYS_BACK dias retroativos
+      const dateOptions = useMemo(() => {
+        const today = new Date();
+        const opts = [];
+        for (let i = 0; i <= MAX_DAYS_BACK; i++) {
+          const d = new Date(today);
+          d.setDate(d.getDate() - i);
+          const iso = todayISO(d);
+          const weekday = d.toLocaleDateString("pt-BR", { weekday: "short" }).replace(".", "");
+          const dayMonth = d.toLocaleDateString("pt-BR", { day: "2-digit", month: "short" }).replace(".", "");
+          opts.push({
+            iso,
+            weekday,
+            dayMonth,
+            label: i === 0 ? "Hoje" : i === 1 ? "Ontem" : dayMonth,
+          });
+        }
+        return opts;
+      }, []);
+
+      // Registro existente para a data selecionada
+      const currentReg = useMemo(
+        () => registros.find((r) => r.userId === session.id && r.date === targetDate),
+        [registros, session.id, targetDate]
+      );
+
+      // Estatística de folga para o usuário logado (estimulo no registro)
+      const myStats = useMemo(
+        () => calcFolgaStats(registros.filter((r) => r.userId === session.id)),
+        [registros, session.id]
+      );
+
+      const handleSelectType = (type) => {
+        if (selected === type) {
+          setSelected(null);
+        } else {
+          setSelected(type);
+          // Hospedado já é "fora" por definição; demais começam como false
+          setAwayFromHome(type === REGISTRO_TYPE.HOSPEDADO);
+        }
+      };
+
+      const handleSelectDate = (iso) => {
+        setTargetDate(iso);
+        setSelected(null);
+        setObservation("");
+        setAwayFromHome(false);
+      };
+
+      const submit = async () => {
+        if (!selected || submitting) return;
+        setSubmitting(true);
+        try {
+          await onRegister({ type: selected, observation: observation.trim(), awayFromHome, date: targetDate });
+          setSelected(null);
+          setObservation("");
+          setAwayFromHome(false);
+        } finally {
+          setSubmitting(false);
+        }
+      };
+
+      const isToday = targetDate === todayISO();
+      const targetLabel = isToday ? "hoje" : (targetDate === dateOptions[1]?.iso ? "ontem" : formatDateLong(targetDate));
 
       return (
         <div className="space-y-4">
-          {/* Card de identificação */}
+          {/* Cabeçalho com identidade */}
           <div className="overflow-hidden rounded-[1.75rem] bg-procer-800 p-5 text-white shadow-card relative">
-            <div className="absolute right-4 top-4 opacity-20">
-              <Icon name="wheat" className="h-16 w-16" />
-            </div>
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-wheat-300">Usuário logado</p>
-            <h2 className="mt-1 text-2xl font-extrabold">{session.displayName}</h2>
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-wheat-300">Olá,</p>
+            <h2 className="mt-1 text-2xl font-extrabold">{session.displayName.split(" ")[0]}</h2>
             <p className="mt-1 text-sm text-white/70">{session.title}</p>
-            <p className="mt-3 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white/90 backdrop-blur-sm">
-              {session.role === ROLE.ADMIN ? "Administrador" : "Colaborador"}
+            <p className="mt-3 text-[11px] uppercase tracking-widest text-wheat-300">
+              {formatDateLong(targetDate)}
             </p>
           </div>
 
-          {/* Botões de registro */}
-          <div className="grid grid-cols-2 gap-3">
-            <button type="button" onClick={() => onPunch(PUNCH_TYPE.ENTRADA)} disabled={!canEntrada}
-              className="rounded-[1.5rem] bg-procer-600 p-5 text-left text-white shadow-cta transition disabled:opacity-40 disabled:shadow-none">
-              <Icon name="clock3" className="h-5 w-5" />
-              <p className="mt-8 text-lg font-extrabold">Entrada</p>
-              <p className="text-sm text-procer-100">{canEntrada ? "Registrar agora" : "Aguardando saída"}</p>
-            </button>
-            <button type="button" onClick={() => onPunch(PUNCH_TYPE.SAIDA)} disabled={!canSaida}
-              className="rounded-[1.5rem] bg-wheat-500 p-5 text-left text-procer-900 shadow-cta transition disabled:opacity-40 disabled:shadow-none">
-              <Icon name="logOut" className="h-5 w-5" />
-              <p className="mt-8 text-lg font-extrabold">Saída</p>
-              <p className="text-sm text-procer-800/70">{canSaida ? "Finalizar jornada" : "Sem entrada aberta"}</p>
-            </button>
-          </div>
-
-          {/* Validação de registro */}
-          <div className="rounded-[1.75rem] bg-white p-5 shadow-card">
-            <div className="flex items-center justify-between">
-              <h3 className="font-bold text-procer-900">Validação de registro</h3>
-              <button type="button" onClick={geo.request}
-                className="rounded-2xl bg-procer-100 px-3 py-2 text-xs font-semibold text-procer-700 transition hover:bg-procer-200">
-                {geo.loading ? "Validando..." : "Ativar localização"}
-              </button>
-            </div>
-            <p className="mt-3 flex items-start gap-2 text-sm text-procer-700">
-              <Icon name="mapPin" className="mt-0.5 h-4 w-4 shrink-0 text-procer-500" />
-              {geo.label}
+          {/* Seletor de data (Hoje + 3 dias retroativos) */}
+          <div className="rounded-[1.75rem] bg-white p-4 shadow-card">
+            <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-procer-600">
+              Registrar para
             </p>
-          </div>
-
-          {/* Últimos registros */}
-          <div className="rounded-[1.75rem] bg-white p-5 shadow-card">
-            <div className="flex items-center justify-between">
-              <h3 className="font-bold text-procer-900">Últimos registros</h3>
-              <button type="button" onClick={onRefresh} aria-label="Atualizar registros"
-                className="rounded-2xl bg-procer-100 p-2 text-procer-700">
-                <Icon name="refreshCw" />
-              </button>
-            </div>
-            <div className="mt-4 space-y-3">
-              {punches.length === 0 && (
-                <p className="text-sm text-ink/50">Nenhum registro ainda.</p>
-              )}
-              {punches.map((item) => (
-                <div key={item.id} className="rounded-2xl border border-procer-100 bg-procer-50/40 px-4 py-3">
-                  <div className="flex items-center justify-between">
-                    <p className="font-semibold text-procer-900">
-                      <span className={`mr-2 inline-block h-2 w-2 rounded-full ${item.type === PUNCH_TYPE.ENTRADA ? 'bg-procer-600' : 'bg-wheat-500'}`}></span>
-                      {item.type}
+            <div className="grid grid-cols-4 gap-1.5">
+              {dateOptions.map((opt) => {
+                const isActive = targetDate === opt.iso;
+                return (
+                  <button
+                    key={opt.iso}
+                    type="button"
+                    onClick={() => handleSelectDate(opt.iso)}
+                    className={`rounded-xl p-2 text-center transition ${
+                      isActive
+                        ? "bg-procer-800 text-white shadow-cta"
+                        : "bg-procer-50 text-procer-700 active:bg-procer-100"
+                    }`}
+                  >
+                    <p className={`text-[9px] font-bold uppercase tracking-wider ${isActive ? "text-wheat-300" : "text-procer-500"}`}>
+                      {opt.weekday}
                     </p>
-                    <p className="font-extrabold text-procer-900 tabular-nums">{item.time}</p>
-                  </div>
-                  <p className="mt-1 text-xs text-ink/50">{item.location}</p>
+                    <p className="text-sm font-extrabold leading-tight">{opt.label}</p>
+                  </button>
+                );
+              })}
+            </div>
+            <p className="mt-2 text-[10px] text-ink/40">
+              Tolerância de até {MAX_DAYS_BACK} dias retroativos. Depois disso o dia fica permanentemente sem registro.
+            </p>
+          </div>
+
+          {/* Registro da data selecionada (se existir) */}
+          {currentReg && (
+            <div className="rounded-[1.75rem] bg-white p-5 shadow-card">
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-procer-600">
+                Status registrado {targetLabel}
+              </p>
+              <div className="mt-2 flex items-center gap-3">
+                <span className={`flex h-12 w-12 items-center justify-center rounded-2xl ${TYPE_CLASSES[currentReg.type].bg} ${TYPE_CLASSES[currentReg.type].text}`}>
+                  <Icon name={REGISTRO_META[currentReg.type].icon} className="h-6 w-6" />
+                </span>
+                <div className="flex-1">
+                  <p className="font-extrabold text-procer-900">
+                    {REGISTRO_META[currentReg.type].label}
+                    {currentReg.awayFromHome && (
+                      <span className="ml-2 rounded-full bg-procer-100 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-procer-700">
+                        Em roteiro
+                      </span>
+                    )}
+                  </p>
+                  {currentReg.observation && (
+                    <p className="text-xs text-ink/60">{currentReg.observation}</p>
+                  )}
                 </div>
-              ))}
+              </div>
+              <p className="mt-3 text-[11px] text-ink/40">
+                Selecione outro tipo abaixo para alterar o registro {targetLabel}.
+              </p>
+            </div>
+          )}
+
+          {/* Grade de tipos */}
+          <div className="rounded-[1.75rem] bg-white p-5 shadow-card">
+            <h3 className="font-bold text-procer-900">
+              {currentReg ? `Alterar status — ${targetLabel}` : `Registrar status — ${targetLabel}`}
+            </h3>
+            <div className="mt-4 grid grid-cols-2 gap-3">
+              {Object.values(REGISTRO_TYPE).map((type) => {
+                const meta = REGISTRO_META[type];
+                const cls = TYPE_CLASSES[type];
+                const isSelected = selected === type;
+                const isCurrent = currentReg?.type === type;
+                return (
+                  <button
+                    key={type}
+                    type="button"
+                    onClick={() => handleSelectType(type)}
+                    className={`flex flex-col items-start gap-2 rounded-2xl border-2 p-4 text-left transition ${
+                      isSelected
+                        ? `${cls.bg} ${cls.text} border-transparent shadow-cta`
+                        : isCurrent
+                          ? "border-procer-200 bg-procer-50 text-procer-900"
+                          : "border-procer-100 bg-white text-procer-900 active:bg-procer-50"
+                    }`}
+                  >
+                    <span className={`flex h-9 w-9 items-center justify-center rounded-xl ${
+                      isSelected ? "bg-white/20" : cls.chip
+                    }`}>
+                      <Icon name={meta.icon} className="h-4 w-4" />
+                    </span>
+                    <span className="text-sm font-bold leading-tight">{meta.label}</span>
+                    {isCurrent && !isSelected && (
+                      <span className="text-[9px] font-bold uppercase tracking-wider text-procer-600">Atual</span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
           </div>
+
+          {/* Confirmação */}
+          {selected && (
+            <div className="rounded-[1.75rem] bg-white p-5 shadow-card">
+              <label htmlFor="reg-obs" className="block text-sm font-semibold text-procer-800">
+                Observação <span className="font-normal text-ink/40">(opcional)</span>
+              </label>
+              <textarea
+                id="reg-obs"
+                value={observation}
+                onChange={(e) => setObservation(e.target.value)}
+                placeholder={
+                  selected === REGISTRO_TYPE.MANUTENCAO ? "Ex.: Placa, problema, oficina..."
+                  : selected === REGISTRO_TYPE.ATESTADO ? "Ex.: Médico, CID, dias..."
+                  : selected === REGISTRO_TYPE.HOSPEDADO ? "Ex.: Cidade, cliente..."
+                  : "Detalhes do dia"
+                }
+                rows={2}
+                className="mt-1 w-full rounded-2xl border border-procer-200 bg-white p-3 text-sm text-ink outline-none focus:border-procer-600 focus:ring-2 focus:ring-procer-100"
+              />
+
+              {(selected === REGISTRO_TYPE.TRABALHADO || selected === REGISTRO_TYPE.MANUTENCAO || selected === REGISTRO_TYPE.ATESTADO) && (
+                <label className="mt-3 flex items-start gap-3 rounded-2xl border border-procer-200 p-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={awayFromHome}
+                    onChange={(e) => setAwayFromHome(e.target.checked)}
+                    className="mt-0.5 h-5 w-5 rounded border-procer-300 accent-procer-600"
+                  />
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-procer-800">
+                      {selected === REGISTRO_TYPE.ATESTADO ? "Atestado durante roteiro" : "Em roteiro (fora da cidade)"}
+                    </p>
+                    <p className="text-xs text-ink/50">
+                      {session.homeCity
+                        ? <>Cidade de moradia: <strong>{session.homeCity}</strong></>
+                        : "Cidade de moradia não cadastrada — peça ao admin"}
+                    </p>
+                    <p className="mt-1 text-[11px] text-procer-600">
+                      Conta para o saldo de folgas (1 a cada {FOLGA_THRESHOLD} dias corridos)
+                    </p>
+                  </div>
+                </label>
+              )}
+
+              {selected === REGISTRO_TYPE.HOSPEDADO && (
+                <div className="mt-3 flex items-start gap-2 rounded-2xl bg-indigo-50 p-3 text-xs text-indigo-700">
+                  <Icon name="bed" className="mt-0.5 h-4 w-4 shrink-0" />
+                  <p>
+                    Hospedado conta automaticamente como dia <strong>em roteiro fora</strong> da cidade
+                    {session.homeCity ? <> de moradia ({session.homeCity})</> : null}.
+                  </p>
+                </div>
+              )}
+
+              {(selected === REGISTRO_TYPE.TRABALHADO || selected === REGISTRO_TYPE.MANUTENCAO || selected === REGISTRO_TYPE.ATESTADO) && awayFromHome && myStats.onRoteiro && (
+                <div className="mt-3 rounded-2xl bg-wheat-50 px-3 py-2 text-xs font-semibold text-wheat-600">
+                  Você está há <span className="text-procer-900">{myStats.currentStreak}</span> dia{myStats.currentStreak === 1 ? "" : "s"} em roteiro — faltam <span className="text-procer-900">{myStats.daysToNext}</span> dia{myStats.daysToNext === 1 ? "" : "s"} para a próxima folga.
+                </div>
+              )}
+
+              {(selected === REGISTRO_TYPE.TRABALHADO || selected === REGISTRO_TYPE.MANUTENCAO) && (
+                <div className="mt-3 flex items-start gap-2 rounded-2xl bg-procer-50 p-3 text-xs text-procer-700">
+                  <Icon name="mapPin" className="mt-0.5 h-4 w-4 shrink-0 text-procer-600" />
+                  <div className="flex-1">
+                    {isToday ? (
+                      <>
+                        <p>{geo.label}</p>
+                        {!geo.enabled && (
+                          <button type="button" onClick={geo.request}
+                            className="mt-1 font-semibold underline">
+                            Ativar localização
+                          </button>
+                        )}
+                      </>
+                    ) : (
+                      <p>Localização não é capturada em registros retroativos.</p>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              <button
+                type="button"
+                onClick={submit}
+                disabled={submitting}
+                className={`mt-4 flex h-12 w-full items-center justify-center gap-2 rounded-2xl font-semibold shadow-cta disabled:opacity-60 ${TYPE_CLASSES[selected].bg} ${TYPE_CLASSES[selected].text}`}
+              >
+                <Icon name="edit" />
+                {submitting
+                  ? "Salvando..."
+                  : `Confirmar como ${REGISTRO_META[selected].label}`}
+              </button>
+            </div>
+          )}
         </div>
       );
     }
@@ -571,6 +910,12 @@
               </div>
               <p className="truncate text-sm text-ink/60">{user.title}</p>
               <p className="mt-1 text-[11px] text-ink/40">@{user.username}</p>
+              {user.homeCity && (
+                <p className="mt-0.5 flex items-center gap-1 text-[11px] text-procer-600">
+                  <Icon name="mapPin" className="h-3 w-3" />
+                  {user.homeCity}
+                </p>
+              )}
             </div>
             <div className="flex flex-col items-end gap-1.5 shrink-0">
               <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
@@ -635,14 +980,14 @@
       const [expandedId, setExpandedId] = useState(null);
       const [showCreate, setShowCreate] = useState(false);
       const [submitting, setSubmitting] = useState(false);
-      const emptyDraft = { username: "", password: "", displayName: "", title: "", role: ROLE.COLABORADOR };
+      const emptyDraft = { username: "", password: "", displayName: "", title: "", homeCity: "" };
       const [draft, setDraft] = useState(emptyDraft);
 
       const visible = useMemo(() => {
         const q = search.toLowerCase().trim();
         if (!q) return users;
         return users.filter((u) =>
-          [u.displayName, u.title, u.username, u.role].some((f) => f.toLowerCase().includes(q))
+          [u.displayName, u.title, u.username, u.role, u.homeCity || ""].some((f) => f.toLowerCase().includes(q))
         );
       }, [users, search]);
 
@@ -715,25 +1060,23 @@
                   onChange={(e) => setDraft((p) => ({ ...p, title: e.target.value }))}
                   placeholder="Ex.: Téc. de Termometria"
                 />
-                <div>
-                  <label htmlFor="new-role" className="mb-1 block text-sm font-semibold text-procer-800">Papel</label>
-                  <select
-                    id="new-role"
-                    value={draft.role}
-                    onChange={(e) => setDraft((p) => ({ ...p, role: e.target.value }))}
-                    className="h-12 w-full rounded-2xl border border-procer-200 bg-white px-4 text-ink outline-none focus:border-procer-600 focus:ring-2 focus:ring-procer-100"
-                  >
-                    <option value={ROLE.COLABORADOR}>Colaborador</option>
-                    <option value={ROLE.ADMIN}>Administrador</option>
-                  </select>
-                </div>
+                <Field
+                  id="new-homecity"
+                  label="Cidade de moradia"
+                  value={draft.homeCity}
+                  onChange={(e) => setDraft((p) => ({ ...p, homeCity: e.target.value }))}
+                  placeholder="Ex.: Criciúma/SC"
+                />
+                <p className="rounded-2xl bg-procer-50 px-3 py-2 text-[11px] text-procer-700">
+                  Novo cadastro entra como <strong>Colaborador Procer</strong>. Você pode promover a administrador depois, na lista abaixo.
+                </p>
                 <button
                   type="submit"
                   disabled={submitting}
                   className="flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-procer-800 font-semibold text-white shadow-cta disabled:opacity-60"
                 >
                   <Icon name="plus" />
-                  {submitting ? "Cadastrando..." : "Cadastrar usuário"}
+                  {submitting ? "Cadastrando..." : "Cadastrar colaborador"}
                 </button>
               </form>
             )}
@@ -780,53 +1123,285 @@
     // -------------------------------------------------------------------
     // Aba Resumo
     // -------------------------------------------------------------------
-    function ResumoTab({ users, punches, onClear }) {
-      const todayCount = useMemo(() => {
-        const today = new Date().toDateString();
-        return punches.filter((p) => p.ts && new Date(p.ts).toDateString() === today).length;
-      }, [punches]);
+    // -------------------------------------------------------------------
+    // Aba Dashboard — métricas por tipo no mês
+    // -------------------------------------------------------------------
+    function MetricCard({ type, count }) {
+      const meta = REGISTRO_META[type];
+      const cls = TYPE_CLASSES[type];
+      return (
+        <div className="rounded-2xl border border-procer-100 bg-white p-3">
+          <div className="flex items-center justify-between">
+            <span className={`flex h-8 w-8 items-center justify-center rounded-lg ${cls.chip}`}>
+              <Icon name={meta.icon} className="h-4 w-4" />
+            </span>
+            <p className="text-2xl font-extrabold tabular-nums text-procer-900">{count}</p>
+          </div>
+          <p className="mt-2 text-[10px] font-bold uppercase tracking-wider text-ink/60">{meta.label}</p>
+          <p className="text-[10px] text-ink/40">{count === 1 ? "dia" : "dias"}</p>
+        </div>
+      );
+    }
 
-      const adminCount = useMemo(
-        () => users.filter((u) => u.role === ROLE.ADMIN).length,
-        [users]
+    function DashboardTab({ session, users, registros, isAdmin }) {
+      const [scope, setScope] = useState("self"); // "self" | userId
+      const ym = currentYearMonth();
+
+      const targetUserId = scope === "self" ? session.id : scope;
+      const targetUser = users.find((u) => u.id === targetUserId) || session;
+
+      // Registros do usuário-alvo (todos, para cálculo de folga histórico)
+      const targetRegs = useMemo(
+        () => registros.filter((r) => r.userId === targetUserId),
+        [registros, targetUserId]
+      );
+
+      // Filtra registros do mês corrente para os contadores mensais
+      const monthRegs = useMemo(
+        () => targetRegs.filter((r) => r.date.startsWith(ym)),
+        [targetRegs, ym]
+      );
+
+      const counts = useMemo(() => {
+        const acc = {};
+        Object.values(REGISTRO_TYPE).forEach((t) => (acc[t] = 0));
+        monthRegs.forEach((r) => {
+          if (acc[r.type] !== undefined) acc[r.type]++;
+        });
+        return acc;
+      }, [monthRegs]);
+
+      // Saldo de folga histórico (todo o histórico, não só do mês)
+      const folgaStats = useMemo(() => calcFolgaStats(targetRegs), [targetRegs]);
+
+      const totalRegistrado = monthRegs.length;
+      const monthLabel = new Date().toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
+
+      return (
+        <div className="space-y-4">
+          {/* Header com mês */}
+          <div className="rounded-[1.75rem] bg-procer-800 p-5 text-white shadow-card">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-wheat-300">
+              Dashboard · {monthLabel}
+            </p>
+            <h2 className="mt-1 text-xl font-extrabold capitalize">
+              {targetUser.displayName}
+            </h2>
+            <p className="text-sm text-white/70">{targetUser.title}</p>
+            {targetUser.homeCity && (
+              <p className="mt-0.5 flex items-center gap-1 text-xs text-white/60">
+                <Icon name="mapPin" className="h-3 w-3" />
+                {targetUser.homeCity}
+              </p>
+            )}
+            <p className="mt-3 text-[11px] text-white/60">
+              <span className="font-bold tabular-nums">{totalRegistrado}</span> dia{totalRegistrado === 1 ? "" : "s"} registrado{totalRegistrado === 1 ? "" : "s"} este mês
+            </p>
+          </div>
+
+          {/* Seletor de colaborador (apenas admin) */}
+          {isAdmin && (
+            <div className="rounded-[1.75rem] bg-white p-4 shadow-card">
+              <label htmlFor="scope" className="mb-1 block text-xs font-semibold uppercase tracking-wider text-procer-600">
+                Visualizar
+              </label>
+              <select
+                id="scope"
+                value={scope}
+                onChange={(e) => setScope(e.target.value)}
+                className="h-11 w-full rounded-2xl border border-procer-200 bg-white px-3 text-sm text-ink outline-none focus:border-procer-600 focus:ring-2 focus:ring-procer-100"
+              >
+                <option value="self">Eu mesmo</option>
+                <optgroup label="Equipe">
+                  {users
+                    .filter((u) => u.id !== session.id)
+                    .map((u) => (
+                      <option key={u.id} value={u.id}>
+                        {u.displayName} · {u.title}
+                      </option>
+                    ))}
+                </optgroup>
+              </select>
+            </div>
+          )}
+
+          {/* Grade de contadores mensais */}
+          <div className="grid grid-cols-2 gap-2">
+            <MetricCard type={REGISTRO_TYPE.TRABALHADO} count={counts[REGISTRO_TYPE.TRABALHADO]} />
+            <MetricCard type={REGISTRO_TYPE.MANUTENCAO} count={counts[REGISTRO_TYPE.MANUTENCAO]} />
+            <MetricCard type={REGISTRO_TYPE.FOLGA}      count={counts[REGISTRO_TYPE.FOLGA]} />
+            <MetricCard type={REGISTRO_TYPE.ATESTADO}   count={counts[REGISTRO_TYPE.ATESTADO]} />
+            <MetricCard type={REGISTRO_TYPE.FERIAS}     count={counts[REGISTRO_TYPE.FERIAS]} />
+            <MetricCard type={REGISTRO_TYPE.HOSPEDADO}  count={counts[REGISTRO_TYPE.HOSPEDADO]} />
+          </div>
+
+          {/* Saldo de folgas — regra 10:1 */}
+          <div className="rounded-[1.75rem] bg-white p-5 shadow-card">
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <h3 className="font-bold text-procer-900">Saldo de Folgas</h3>
+                <p className="mt-0.5 text-xs text-ink/50">
+                  1 folga a cada {FOLGA_THRESHOLD} dias corridos em roteiro fora da cidade
+                </p>
+              </div>
+              <span className="rounded-full bg-procer-100 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-procer-700">
+                Regra {FOLGA_THRESHOLD}:1
+              </span>
+            </div>
+
+            <div className="mt-4 grid grid-cols-2 gap-2 text-sm">
+              <div className="rounded-2xl border border-procer-100 bg-procer-50 p-3">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-procer-600">Dias em roteiro</p>
+                <p className="mt-1 text-xl font-extrabold tabular-nums text-procer-900">{folgaStats.totalAwayDays}</p>
+              </div>
+              <div className="rounded-2xl border border-procer-100 bg-procer-50 p-3">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-procer-600">Folgas devidas</p>
+                <p className="mt-1 text-xl font-extrabold tabular-nums text-procer-900">{folgaStats.folgasEarned}</p>
+              </div>
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-600">Folgas tiradas</p>
+                <p className="mt-1 text-xl font-extrabold tabular-nums text-slate-700">{folgaStats.folgasTaken}</p>
+              </div>
+              <div className={`rounded-2xl border p-3 ${
+                folgaStats.saldo > 0
+                  ? "border-wheat-300 bg-wheat-50"
+                  : folgaStats.saldo < 0
+                    ? "border-rose-200 bg-rose-50"
+                    : "border-procer-100 bg-procer-50"
+              }`}>
+                <p className={`text-[10px] font-bold uppercase tracking-wider ${
+                  folgaStats.saldo > 0 ? "text-wheat-600"
+                  : folgaStats.saldo < 0 ? "text-rose-600"
+                  : "text-procer-600"
+                }`}>Saldo</p>
+                <p className={`mt-1 text-xl font-extrabold tabular-nums ${
+                  folgaStats.saldo > 0 ? "text-wheat-600"
+                  : folgaStats.saldo < 0 ? "text-rose-600"
+                  : "text-procer-900"
+                }`}>{folgaStats.saldo > 0 ? `+${folgaStats.saldo}` : folgaStats.saldo}</p>
+              </div>
+            </div>
+
+            {folgaStats.onRoteiro && (
+              <div className="mt-4">
+                <div className="flex items-center justify-between text-xs">
+                  <p className="font-semibold text-procer-700">
+                    Roteiro em curso · próxima folga em{" "}
+                    <span className="text-procer-900">{folgaStats.daysToNext} dia{folgaStats.daysToNext === 1 ? "" : "s"}</span>
+                  </p>
+                  <p className="text-ink/50 tabular-nums">
+                    {folgaStats.blockProgress}/{FOLGA_THRESHOLD}
+                  </p>
+                </div>
+                <div className="mt-2 h-2 overflow-hidden rounded-full bg-procer-100">
+                  <div
+                    className="h-full rounded-full bg-procer-600 transition-all"
+                    style={{ width: `${(folgaStats.blockProgress / FOLGA_THRESHOLD) * 100}%` }}
+                  />
+                </div>
+              </div>
+            )}
+
+            {folgaStats.saldo > 0 && (
+              <div className="mt-3 flex items-start gap-2 rounded-2xl bg-wheat-50 px-3 py-2 text-xs">
+                <Icon name="sun" className="mt-0.5 h-4 w-4 shrink-0 text-wheat-600" />
+                <p className="font-semibold text-wheat-600">
+                  {targetUserId === session.id ? "Você tem" : `${targetUser.displayName.split(" ")[0]} tem`} direito a {folgaStats.saldo} folga{folgaStats.saldo === 1 ? "" : "s"} acumulada{folgaStats.saldo === 1 ? "" : "s"}.
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Resumo da Procer */}
+          <div className="rounded-[1.75rem] bg-procer-50 p-5">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-procer-600">Procer</p>
+            <p className="mt-2 text-sm leading-6 text-procer-800">
+              {APP_TAGLINE}. Sistema interno de controle de equipes — Coord. de Implantações.
+            </p>
+          </div>
+        </div>
+      );
+    }
+
+    // -------------------------------------------------------------------
+    // Aba Histórico — lista de registros
+    // -------------------------------------------------------------------
+    function HistoricoTab({ session, users, registros, isAdmin, onClear }) {
+      const [scope, setScope] = useState("self");
+
+      const targetUserId = scope === "self" ? session.id : scope;
+
+      const list = useMemo(
+        () => registros
+          .filter((r) => r.userId === targetUserId)
+          .sort((a, b) => (b.date > a.date ? 1 : -1)),
+        [registros, targetUserId]
       );
 
       return (
         <div className="space-y-4">
-          <div className="rounded-[1.75rem] bg-white p-5 shadow-card">
-            <h3 className="text-lg font-bold text-procer-900">Resumo rápido</h3>
-            <div className="mt-4 grid grid-cols-3 gap-2 text-sm">
-              <div className="rounded-2xl bg-procer-50 p-3">
-                <p className="text-[9px] font-semibold uppercase tracking-wider text-procer-600">Usuários</p>
-                <p className="mt-1 text-xl font-extrabold text-procer-900">{users.length}</p>
-              </div>
-              <div className="rounded-2xl bg-procer-50 p-3">
-                <p className="text-[9px] font-semibold uppercase tracking-wider text-procer-600">Admins</p>
-                <p className="mt-1 text-xl font-extrabold text-procer-900">{adminCount}</p>
-              </div>
-              <div className="rounded-2xl bg-wheat-50 p-3">
-                <p className="text-[9px] font-semibold uppercase tracking-wider text-wheat-600">Pontos hoje</p>
-                <p className="mt-1 text-xl font-extrabold text-procer-900">{todayCount}</p>
-              </div>
+          {isAdmin && (
+            <div className="rounded-[1.75rem] bg-white p-4 shadow-card">
+              <label htmlFor="hist-scope" className="mb-1 block text-xs font-semibold uppercase tracking-wider text-procer-600">
+                Histórico de
+              </label>
+              <select
+                id="hist-scope"
+                value={scope}
+                onChange={(e) => setScope(e.target.value)}
+                className="h-11 w-full rounded-2xl border border-procer-200 bg-white px-3 text-sm text-ink outline-none focus:border-procer-600 focus:ring-2 focus:ring-procer-100"
+              >
+                <option value="self">Eu mesmo</option>
+                <optgroup label="Equipe">
+                  {users
+                    .filter((u) => u.id !== session.id)
+                    .map((u) => (
+                      <option key={u.id} value={u.id}>
+                        {u.displayName}
+                      </option>
+                    ))}
+                </optgroup>
+              </select>
             </div>
-          </div>
+          )}
 
           <div className="rounded-[1.75rem] bg-white p-5 shadow-card">
-            <h3 className="text-lg font-bold text-procer-900">Recursos do app</h3>
-            <div className="mt-4 space-y-3 text-sm text-ink/70">
-              <div className="flex items-start gap-2"><Icon name="user" className="mt-0.5 h-4 w-4 text-procer-600" /> Login por usuário e senha</div>
-              <div className="flex items-start gap-2"><Icon name="mapPin" className="mt-0.5 h-4 w-4 text-procer-600" /> Validação opcional de localização</div>
-              <div className="flex items-start gap-2"><Icon name="calendarClock" className="mt-0.5 h-4 w-4 text-procer-600" /> Registro de entrada e saída</div>
-              <div className="flex items-start gap-2"><Icon name="users" className="mt-0.5 h-4 w-4 text-procer-600" /> Cadastro e consulta de equipe</div>
-            </div>
-          </div>
+            <h3 className="text-lg font-bold text-procer-900">Histórico</h3>
+            <p className="text-xs text-ink/50">{list.length} registro{list.length === 1 ? "" : "s"}</p>
 
-          <div className="rounded-[1.75rem] bg-procer-800 p-5 text-white shadow-card">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-wheat-300">Sobre a Procer</p>
-            <p className="mt-2 text-sm leading-6 text-white/80">
-              Pioneira da América Latina em termometria digital. Agrointeligência aplicada à preservação de cada grão no pós-colheita.
-            </p>
-            <p className="mt-3 text-[10px] uppercase tracking-widest text-white/40">Criciúma/SC · 13 países</p>
+            <div className="mt-4 space-y-2">
+              {list.length === 0 && (
+                <p className="text-sm text-ink/50">Nenhum registro encontrado.</p>
+              )}
+              {list.map((reg) => {
+                const meta = REGISTRO_META[reg.type];
+                const cls = TYPE_CLASSES[reg.type];
+                return (
+                  <div key={reg.id} className="flex items-start gap-3 rounded-2xl border border-procer-100 p-3">
+                    <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${cls.bg} ${cls.text}`}>
+                      <Icon name={meta.icon} className="h-4 w-4" />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="text-sm font-bold text-procer-900">{meta.label}</p>
+                        <p className="text-[11px] font-semibold uppercase tracking-wider text-ink/50">
+                          {formatDateLong(reg.date)}
+                        </p>
+                      </div>
+                      {reg.observation && (
+                        <p className="mt-0.5 text-xs text-ink/60 break-words">{reg.observation}</p>
+                      )}
+                      {reg.location && (
+                        <p className="mt-0.5 flex items-center gap-1 text-[10px] text-ink/40">
+                          <Icon name="mapPin" className="h-3 w-3" />
+                          {reg.location}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
 
           <button type="button" onClick={onClear}
@@ -843,8 +1418,8 @@
     function App() {
       const [session, setSession] = usePersistedState(`${STORAGE_KEY}:session`, null);
       const [users, setUsers] = usePersistedState(`${STORAGE_KEY}:users`, INITIAL_USERS);
-      const [punches, setPunches] = usePersistedState(`${STORAGE_KEY}:punches`, []);
-      const [activeTab, setActiveTab] = useState(TAB.PONTO);
+      const [registros, setRegistros] = usePersistedState(`${STORAGE_KEY}:registros`, []);
+      const [activeTab, setActiveTab] = useState(TAB.DASHBOARD);
       const geo = useGeolocation();
       const { toast, show: showToast } = useToast();
 
@@ -859,44 +1434,72 @@
           setSession(null);
           return;
         }
-        if (me.role !== session.role || me.displayName !== session.displayName || me.title !== session.title) {
+        if (me.role !== session.role || me.displayName !== session.displayName || me.title !== session.title || me.homeCity !== session.homeCity) {
           setSession({
             id: me.id,
             username: me.username,
             role: me.role,
             displayName: me.displayName,
             title: me.title,
+            homeCity: me.homeCity || "",
           });
         }
       }, [users, session, setSession]);
 
       useEffect(() => {
-        if (!isAdmin && activeTab === TAB.EQUIPE) setActiveTab(TAB.PONTO);
+        if (!isAdmin && activeTab === TAB.EQUIPE) setActiveTab(TAB.DASHBOARD);
       }, [isAdmin, activeTab]);
 
-      const registerPunch = useCallback((type) => {
-        const lastType = punches[0]?.type;
-        if (type === PUNCH_TYPE.ENTRADA && lastType === PUNCH_TYPE.ENTRADA) {
-          showToast("Já existe uma entrada em aberto.", TOAST.ERROR); return;
+      // Registra/atualiza status do dia para o usuário logado
+      const registerStatus = useCallback(async ({ type, observation, awayFromHome, date }) => {
+        if (!session) return;
+        const targetDate = date || todayISO();
+        // Valida janela de tolerância: até MAX_DAYS_BACK dias atrás, nunca no futuro
+        const today = todayISO();
+        const diff = daysBetween(targetDate, today);
+        if (diff < 0) {
+          showToast("Não é possível registrar para datas futuras.", TOAST.ERROR);
+          return;
         }
-        if (type === PUNCH_TYPE.SAIDA && lastType !== PUNCH_TYPE.ENTRADA) {
-          showToast("Não há entrada em aberto para fechar.", TOAST.ERROR); return;
+        if (diff > MAX_DAYS_BACK) {
+          showToast(`Tolerância máxima é de ${MAX_DAYS_BACK} dias retroativos.`, TOAST.ERROR);
+          return;
         }
-        const time = formatHHMM();
-        const location = geo.coords
+
+        const userId = session.id;
+        const needsLocation = type === REGISTRO_TYPE.TRABALHADO || type === REGISTRO_TYPE.MANUTENCAO;
+        // Localização só faz sentido se está registrando hoje (GPS atual)
+        const location = needsLocation && diff === 0 && geo.coords
           ? `${geo.coords.lat.toFixed(4)}, ${geo.coords.lng.toFixed(4)}`
-          : "Registro remoto";
-        setPunches((prev) => [{ id: newId(), type, time, location, ts: Date.now() }, ...prev]);
-        showToast(`${type} registrada às ${time}.`, TOAST.SUCCESS);
-      }, [punches, geo.coords, setPunches, showToast]);
+          : null;
+
+        // Regra de roteiro: hospedado SEMPRE é "fora";
+        // trabalhado, manutenção e atestado dependem do flag explícito do colaborador.
+        const effectiveAway =
+          type === REGISTRO_TYPE.HOSPEDADO ? true
+          : (
+              type === REGISTRO_TYPE.TRABALHADO ||
+              type === REGISTRO_TYPE.MANUTENCAO ||
+              type === REGISTRO_TYPE.ATESTADO
+            ) ? !!awayFromHome
+          : false;
+
+        setRegistros((prev) => [
+          { id: newId(), userId, date: targetDate, type, location, observation: observation || null, awayFromHome: effectiveAway, ts: Date.now() },
+          ...prev.filter((r) => !(r.userId === userId && r.date === targetDate)),
+        ]);
+        const dateLabel = diff === 0 ? "hoje" : diff === 1 ? "ontem" : `há ${diff} dias`;
+        showToast(`Registrado como ${REGISTRO_META[type].label} (${dateLabel}).`, TOAST.SUCCESS);
+      }, [session, geo.coords, setRegistros, showToast]);
 
       // Operações de gestão de usuários
       const userOps = useMemo(() => ({
-        create: async ({ username, password, displayName, title, role }) => {
+        create: async ({ username, password, displayName, title, homeCity, role }) => {
           const u = (username || "").trim().toLowerCase();
           const dn = (displayName || "").trim();
           const t = (title || "").trim();
-          if (!u || !password || !dn || !t) {
+          const hc = (homeCity || "").trim();
+          if (!u || !password || !dn || !t || !hc) {
             showToast("Preencha todos os campos.", TOAST.ERROR);
             return false;
           }
@@ -921,12 +1524,12 @@
               role: role === ROLE.ADMIN ? ROLE.ADMIN : ROLE.COLABORADOR,
               displayName: dn,
               title: t,
+              homeCity: hc,
               status: STATUS.OFFLINE,
-              lastPunch: "Sem registro",
             },
             ...prev,
           ]);
-          showToast("Usuário cadastrado.", TOAST.SUCCESS);
+          showToast("Colaborador Procer cadastrado.", TOAST.SUCCESS);
           return true;
         },
         resetPassword: async (userId) => {
@@ -949,7 +1552,6 @@
           }
           const target = users.find((x) => x.id === userId);
           if (!target) return;
-          // Bloqueia rebaixar o último admin
           const isLastAdmin =
             target.role === ROLE.ADMIN &&
             users.filter((x) => x.role === ROLE.ADMIN).length === 1;
@@ -976,7 +1578,7 @@
             showToast("Não é possível excluir o último administrador.", TOAST.ERROR);
             return;
           }
-          if (!window.confirm(`Excluir ${target.displayName}?`)) return;
+          if (!window.confirm(`Excluir ${target.displayName}? Os registros do colaborador serão mantidos.`)) return;
           setUsers((prev) => prev.filter((x) => x.id !== userId));
           showToast(`${target.displayName} excluído.`, TOAST.SUCCESS);
         },
@@ -985,19 +1587,19 @@
       const loginHandlers = useMemo(() => ({
         success: (payload) => {
           setSession(payload);
-          showToast(`Bem-vindo, ${payload.displayName}.`, TOAST.SUCCESS);
+          showToast(`Bem-vindo, ${payload.displayName.split(" ")[0]}.`, TOAST.SUCCESS);
         },
         error: (msg) => showToast(msg, TOAST.ERROR),
       }), [setSession, showToast]);
 
       const logout = () => {
         setSession(null);
-        setActiveTab(TAB.PONTO);
+        setActiveTab(TAB.DASHBOARD);
       };
 
       const clearAll = () => {
-        if (!confirm("Limpar todos os dados locais (pontos e usuários cadastrados)?")) return;
-        setPunches([]);
+        if (!window.confirm("Limpar todos os dados locais (registros e usuários cadastrados)?")) return;
+        setRegistros([]);
         setUsers(INITIAL_USERS);
         showToast("Dados locais restaurados ao padrão.", TOAST.INFO);
       };
@@ -1018,36 +1620,35 @@
               </div>
               <div className="mt-4">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-wheat-300">
-                  Controle de Ponto · v{APP_VERSION}
+                  Controle de Equipe · v{APP_VERSION}
                 </p>
-                <h1 className="mt-1 text-xl font-extrabold">Registro remoto</h1>
+                <h1 className="mt-1 text-xl font-extrabold">{APP_NAME}</h1>
               </div>
             </header>
 
             <main className="-mt-3 flex-1 rounded-t-[2rem] bg-cream px-4 pb-28 pt-5">
               <Toast toast={toast} />
 
-              {activeTab === TAB.PONTO && (
-                <PontoTab session={session} geo={geo} punches={punches}
-                  onPunch={registerPunch}
-                  onRefresh={() => showToast("Dados atualizados.", TOAST.INFO)} />
+              {activeTab === TAB.DASHBOARD && (
+                <DashboardTab session={session} users={users} registros={registros} isAdmin={isAdmin} />
+              )}
+              {activeTab === TAB.REGISTRO && (
+                <RegistroTab session={session} geo={geo} registros={registros} onRegister={registerStatus} />
               )}
               {activeTab === TAB.EQUIPE && (
-                <EquipeTab
-                  users={users}
-                  currentUserId={session.id}
-                  userOps={userOps}
-                  isAdmin={isAdmin}
-                />
+                <EquipeTab users={users} currentUserId={session.id} userOps={userOps} isAdmin={isAdmin} />
               )}
-              {activeTab === TAB.RESUMO && <ResumoTab users={users} punches={punches} onClear={clearAll} />}
+              {activeTab === TAB.HISTORICO && (
+                <HistoricoTab session={session} users={users} registros={registros} isAdmin={isAdmin} onClear={clearAll} />
+              )}
             </main>
 
-            <nav className="fixed bottom-0 left-0 right-0 border-t border-procer-100 bg-white/95 px-4 py-3 backdrop-blur safe-bottom">
-              <div className="mx-auto flex max-w-md gap-2">
-                <TabButton active={activeTab === TAB.PONTO} iconName="clock3" label="Ponto" onClick={() => setActiveTab(TAB.PONTO)} />
+            <nav className="fixed bottom-0 left-0 right-0 border-t border-procer-100 bg-white/95 px-3 py-2 backdrop-blur safe-bottom">
+              <div className="mx-auto flex max-w-md gap-1.5">
+                <TabButton active={activeTab === TAB.DASHBOARD} iconName="barChart" label="Dashboard" onClick={() => setActiveTab(TAB.DASHBOARD)} />
+                <TabButton active={activeTab === TAB.REGISTRO} iconName="edit" label="Registro" onClick={() => setActiveTab(TAB.REGISTRO)} />
                 {isAdmin && <TabButton active={activeTab === TAB.EQUIPE} iconName="users" label="Equipe" onClick={() => setActiveTab(TAB.EQUIPE)} />}
-                <TabButton active={activeTab === TAB.RESUMO} iconName="calendarClock" label="Resumo" onClick={() => setActiveTab(TAB.RESUMO)} />
+                <TabButton active={activeTab === TAB.HISTORICO} iconName="history" label="Histórico" onClick={() => setActiveTab(TAB.HISTORICO)} />
               </div>
             </nav>
           </div>
