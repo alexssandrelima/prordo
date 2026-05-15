@@ -2039,22 +2039,11 @@
         document.body.appendChild(s);
       }
 
-      function runBabel() {
-        try {
-          var appSrc = document.querySelector('script[type="text/babel"]').textContent;
-          var compiled = Babel.transform(appSrc, { presets: ['react'] }).code;
-          var s = document.createElement('script');
-          s.textContent = compiled;
-          document.body.appendChild(s);
-        } catch (e) {
-          console.error('Babel transform error:', e);
-          showErr();
-        }
-      }
-
-      // Sequência: ReactDOM → Babel → compila e monta o app
+      // Babel processa type="text/babel" automaticamente ao carregar.
+      // Ele lê o atributo data-presets="react" do script tag e compila o JSX.
+      // Não é necessário — nem correto — chamar Babel.transform() manualmente.
       load(RDOM, 0,
-        function () { load(BABEL, 0, runBabel, showErr); },
+        function () { load(BABEL, 0, function () { /* Babel auto-processa */ }, showErr); },
         showErr
       );
     })();
